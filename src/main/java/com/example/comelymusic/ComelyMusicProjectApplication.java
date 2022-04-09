@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.example.comelymusicproject.mapper")
+@MapperScan("com.example.comelymusic.generate.mapper")
 public class ComelyMusicProjectApplication {
 
     public static void main(String[] args) {

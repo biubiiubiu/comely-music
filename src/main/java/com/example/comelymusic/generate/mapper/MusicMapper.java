@@ -3,6 +3,7 @@ package com.example.comelymusic.generate.mapper;
 import com.example.comelymusic.generate.entity.Music;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>
@@ -13,6 +14,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2022-04-08
  */
 @Mapper
-public interface MusicDao extends BaseMapper<Music> {
+@Component
+public interface MusicMapper extends BaseMapper<Music> {
 
 }

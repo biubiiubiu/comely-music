@@ -1,7 +1,7 @@
 package com.example.comelymusic.generate.service.impl;
 
 import com.example.comelymusic.generate.entity.Artist;
-import com.example.comelymusic.generate.mapper.ArtistDao;
+import com.example.comelymusic.generate.mapper.ArtistMapper;
 import com.example.comelymusic.generate.service.ArtistService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2022-04-08
  */
 @Service
-public class ArtistServiceImp extends ServiceImpl<ArtistDao, Artist> implements ArtistService {
+public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> implements ArtistService {
 
 }

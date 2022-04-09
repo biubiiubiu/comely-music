@@ -24,11 +24,11 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @TableName("playlist_music")
 @ApiModel(value = "Playlist_music对象", description = "歌单歌曲表")
-public class Playlist_music extends Model<Playlist_music> {
+public class PlaylistMusic extends Model<PlaylistMusic> {
 
     @ApiModelProperty("歌单ID")
     @TableField("playlist_id")
-    private String playlist_id;
+    private String playlistId;
 
     @ApiModelProperty("歌曲ID")
     @TableField("music_id")

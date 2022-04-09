@@ -1,18 +1,20 @@
 package com.example.comelymusic.generate.mapper;
 
-import com.example.comelymusic.generate.entity.Playlist_music;
+import com.example.comelymusic.generate.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>
- * 歌单歌曲表 Mapper 接口
+ * 用户表 Mapper 接口
  * </p>
  *
  * @author zhangtian
  * @since 2022-04-08
  */
 @Mapper
-public interface Playlist_musicDao extends BaseMapper<Playlist_music> {
+@Component
+public interface UserMapper extends BaseMapper<User> {
 
 }

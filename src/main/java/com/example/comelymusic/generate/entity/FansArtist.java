@@ -24,15 +24,15 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @TableName("fans_artist")
 @ApiModel(value = "Fans_artist对象", description = "粉丝歌手关联表")
-public class Fans_artist extends Model<Fans_artist> {
+public class FansArtist extends Model<FansArtist> {
 
     @ApiModelProperty("用户ID（粉丝）")
     @TableField("user_id")
-    private String user_id;
+    private String userId;
 
     @ApiModelProperty("歌手ID")
     @TableField("artist_id")
-    private String artist_id;
+    private String artistId;
 
 
     @Override

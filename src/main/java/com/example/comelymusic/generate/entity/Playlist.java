@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+
+import com.example.comelymusic.generate.entity.common.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -27,10 +27,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("playlist")
 @ApiModel(value = "Playlist对象", description = "歌单表")
-public class Playlist extends Model<Playlist> {
+public class Playlist extends BaseEntity<Playlist> {
 
     @ApiModelProperty("歌单ID")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private String id;
 
     @ApiModelProperty("歌单名字")
@@ -39,11 +39,11 @@ public class Playlist extends Model<Playlist> {
 
     @ApiModelProperty("歌曲数量")
     @TableField("music_num")
-    private Integer music_num;
+    private Integer musicNum;
 
     @ApiModelProperty("收藏数量")
     @TableField("collect_num")
-    private Integer collect_num;
+    private Integer collectNum;
 
     @ApiModelProperty("歌单简介")
     @TableField("description")
@@ -55,23 +55,19 @@ public class Playlist extends Model<Playlist> {
 
     @ApiModelProperty("歌单封面ID")
     @TableField("cover_id")
-    private String cover_id;
+    private String coverId;
 
     @ApiModelProperty("创建者用户ID")
     @TableField("created_by_user_id")
-    private String created_by_user_id;
+    private String createdByUserId;
 
     @ApiModelProperty("推荐因数：越高越在上面")
     @TableField("recommend_factor")
-    private Integer recommend_factor;
+    private Integer recommendFactor;
 
-    @ApiModelProperty("创建时间")
-    @TableField("created_time")
-    private LocalDateTime created_time;
-
-    @ApiModelProperty("更新时间")
-    @TableField("updated_time")
-    private LocalDateTime updated_time;
+    public Playlist() {
+        super();
+    }
 
 
     @Override

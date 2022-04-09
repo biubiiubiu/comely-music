@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+
+import com.example.comelymusic.generate.entity.common.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -27,10 +27,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("file")
 @ApiModel(value = "File对象", description = "文件表")
-public class File extends Model<File> {
+public class File extends BaseEntity<File> {
 
     @ApiModelProperty("文件ID")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private String id;
 
     @ApiModelProperty("文件名")
@@ -39,7 +39,7 @@ public class File extends Model<File> {
 
     @ApiModelProperty("文件hash值，即ObjectKey")
     @TableField("file_key")
-    private String file_key;
+    private String fileKey;
 
     @ApiModelProperty("文件后缀名")
     @TableField("ext")
@@ -61,13 +61,9 @@ public class File extends Model<File> {
     @TableField("status")
     private String status;
 
-    @ApiModelProperty("创建时间")
-    @TableField("created_time")
-    private LocalDateTime created_time;
-
-    @ApiModelProperty("更新时间")
-    @TableField("updated_time")
-    private LocalDateTime updated_time;
+    public File() {
+        super();
+    }
 
 
     @Override

@@ -1,7 +1,7 @@
 package com.example.comelymusic.generate.service.impl;
 
 import com.example.comelymusic.generate.entity.Playlist;
-import com.example.comelymusic.generate.mapper.PlaylistDao;
+import com.example.comelymusic.generate.mapper.PlaylistMapper;
 import com.example.comelymusic.generate.service.PlaylistService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2022-04-08
  */
 @Service
-public class PlaylistServiceImp extends ServiceImpl<PlaylistDao, Playlist> implements PlaylistService {
+public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> implements PlaylistService {
 
 }
