@@ -20,7 +20,7 @@ public enum ResultCode {
     HTTP_CLIENT_ERROR(false, 20004, "http client异常"),
 
     USERNAME_EXISTS(false, 30001, "用户名已存在!"),
-    USER_NOT_EXIST(false, 30002, "删除用户失败, 用户不存在!");
+    USER_NOT_EXIST(false, 30002, "用户不存在!");
 
 
     // 响应是否成功

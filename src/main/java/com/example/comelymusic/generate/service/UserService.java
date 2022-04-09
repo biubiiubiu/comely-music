@@ -16,4 +16,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface UserService extends IService<User> {
     int create(UserCreateRequest userCreateRequest) throws ServiceException;
     int deleteByUsername(String username) throws ServiceException;
+    User selectByUsername(String username) throws ServiceException;
+    int update(UserCreateRequest userCreateRequest) throws ServiceException;
 }

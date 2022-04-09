@@ -36,13 +36,15 @@ public class UserController {
         return R.ok().data("items", userList).message("用户列表");
     }
 
+
+
     /**
      * 新增用户
      */
-    @PostMapping()
+    @PostMapping("/create")
     public R create(@Validated @RequestBody UserCreateRequest userCreateRequest) {
         int result = userService.create(userCreateRequest);
-        if (result == -1) {
+        if (result == 0) {
             return R.setResult(ResultCode.USERNAME_EXISTS);
         }
         return R.ok();
@@ -51,11 +53,23 @@ public class UserController {
     /**
      * 删除用户
      */
-    @DeleteMapping("/username")
-    public R delete(@PathVariable String username) {
+    @DeleteMapping("/delete/{username}")
+    public R delete(@PathVariable("username") String username) {
         int delete = userService.deleteByUsername(username);
         if (delete == 0) {
             R.setResult(ResultCode.USER_NOT_EXIST);
+        }
+        return R.ok();
+    }
+
+    /**
+     * 修改用户信息，username不能为null
+     */
+    @PutMapping("/update")
+    public R update(@Validated @RequestBody UserCreateRequest userCreateRequest) {
+        int result = userService.update(userCreateRequest);
+        if (result == 0) {
+            return R.setResult(ResultCode.USER_NOT_EXIST);
         }
         return R.ok();
     }
