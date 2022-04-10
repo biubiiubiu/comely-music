@@ -27,7 +27,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("file")
 @ApiModel(value = "File对象", description = "文件表")
-public class File extends BaseEntity<File> {
+public class FileEntity extends BaseEntity<FileEntity> {
 
     @ApiModelProperty("文件ID")
     @TableId(value = "id", type = IdType.AUTO)
@@ -61,7 +61,7 @@ public class File extends BaseEntity<File> {
     @TableField("status")
     private String status;
 
-    public File() {
+    public FileEntity() {
         super();
     }
 

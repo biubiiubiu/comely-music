@@ -2,7 +2,7 @@ package com.example.comelymusic.generate.controller;
 
 
 import com.example.comelymusic.generate.common.R;
-import com.example.comelymusic.generate.controller.createrequest.UserCreateRequest;
+import com.example.comelymusic.generate.controller.requests.UserCreateRequest;
 import com.example.comelymusic.generate.entity.User;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.service.UserService;

@@ -1,7 +1,7 @@
 package com.example.comelymusic.generate.common.handler;
 
 import com.example.comelymusic.generate.common.R;
-import com.example.comelymusic.generate.common.ServiceException;
+import com.example.comelymusic.generate.common.ComelyMusicException;
 import com.example.comelymusic.generate.enums.ResultCode;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -38,9 +38,9 @@ public class GlobalExceptionHadler {
     }
 
     /**-------- 自定义定异常处理方法 --------**/
-    @ExceptionHandler(ServiceException.class)
+    @ExceptionHandler(ComelyMusicException.class)
     @ResponseBody
-    public R error(ServiceException e) {
+    public R error(ComelyMusicException e) {
         e.printStackTrace();
         return R.error().message(e.getMessage()).code(e.getCode());
     }

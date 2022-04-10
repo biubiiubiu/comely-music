@@ -1,6 +1,6 @@
 package com.example.comelymusic.generate.mapper;
 
-import com.example.comelymusic.generate.entity.File;
+import com.example.comelymusic.generate.entity.FileEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Component;
  */
 @Mapper
 @Component
-public interface FileMapper extends BaseMapper<File> {
+public interface FileMapper extends BaseMapper<FileEntity> {
 
 }

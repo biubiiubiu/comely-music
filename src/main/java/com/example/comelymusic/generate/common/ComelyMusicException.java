@@ -10,16 +10,16 @@ import lombok.Data;
  * @since: 2022-04-09 12:59
  */
 @Data
-public class ServiceException extends RuntimeException {
+public class ComelyMusicException extends RuntimeException {
     private Integer code;
     private ResultCode resultCode;
 
-    public ServiceException(Integer code, String message) {
+    public ComelyMusicException(Integer code, String message) {
         super(message);
         this.code = code;
     }
 
-    public ServiceException(ResultCode resultCode) {
+    public ComelyMusicException(ResultCode resultCode) {
         super(resultCode.getMessage());
         this.code = resultCode.getCode();
         this.resultCode = resultCode;
@@ -27,6 +27,6 @@ public class ServiceException extends RuntimeException {
 
     @Override
     public String toString() {
-        return "ServiceException{" + "code=" + code + ", message=" + this.getMessage() + '}';
+        return "ComelyMusicException{" + "code=" + code + ", message=" + this.getMessage() + '}';
     }
 }

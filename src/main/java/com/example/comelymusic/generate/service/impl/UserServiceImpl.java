@@ -1,8 +1,8 @@
 package com.example.comelymusic.generate.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.example.comelymusic.generate.common.ServiceException;
-import com.example.comelymusic.generate.controller.createrequest.UserCreateRequest;
+import com.example.comelymusic.generate.common.ComelyMusicException;
+import com.example.comelymusic.generate.controller.requests.UserCreateRequest;
 import com.example.comelymusic.generate.entity.User;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.mapper.UserMapper;
@@ -30,12 +30,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 创建新用户
      * @param userCreateRequest 创建约束，userCreateRequest字段不能缺失
      * @return 创建结果
-     * @throws ServiceException 用户已经存在的异常
+     * @throws ComelyMusicException 用户已经存在的异常
      */
     @Override
-    public int create(UserCreateRequest userCreateRequest) throws ServiceException {
+    public int create(UserCreateRequest userCreateRequest) throws ComelyMusicException {
         if (checkUserNameExists(userCreateRequest.getUsername())) {
-            ServiceException se = new ServiceException(ResultCode.USERNAME_EXISTS);
+            ComelyMusicException se = new ComelyMusicException(ResultCode.USERNAME_EXISTS);
             log.error(se.toString());
             return 0;
         }
@@ -47,10 +47,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 根据用户名删除单个用户
      * @param username 用户名
      * @return 删除结果
-     * @throws ServiceException 异常
+     * @throws ComelyMusicException 异常
      */
     @Override
-    public int deleteByUsername(String username) throws ServiceException {
+    public int deleteByUsername(String username) throws ComelyMusicException {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("username", username);
         return userMapper.delete(wrapper);
@@ -60,10 +60,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 根据用户名查询单个用户
      * @param username 用户名
      * @return 查询结果
-     * @throws ServiceException 用户不存在异常
+     * @throws ComelyMusicException 用户不存在异常
      */
     @Override
-    public User selectByUsername(String username) throws ServiceException {
+    public User selectByUsername(String username) throws ComelyMusicException {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("username", username);
         return userMapper.selectOne(wrapper);
@@ -73,13 +73,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 修改用户信息
      * @param userCreateRequest 修改的约束，userCreateRequest字段不能缺失
      * @return 修改结果
-     * @throws ServiceException 用户不存在的异常
+     * @throws ComelyMusicException 用户不存在的异常
      */
     @Override
-    public int update(UserCreateRequest userCreateRequest) throws ServiceException {
+    public int update(UserCreateRequest userCreateRequest) throws ComelyMusicException {
         String username = userCreateRequest.getUsername();
         if (!checkUserNameExists(username)) {
-            ServiceException se = new ServiceException(ResultCode.USER_NOT_EXIST);
+            ComelyMusicException se = new ComelyMusicException(ResultCode.USER_NOT_EXIST);
             log.error(se.toString());
             return 0;
         } else {
@@ -93,7 +93,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 检查用户名已存在
      */
-    private boolean checkUserNameExists(String username) throws ServiceException {
+    private boolean checkUserNameExists(String username) throws ComelyMusicException {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("username", username);
         User user = userMapper.selectOne(wrapper);

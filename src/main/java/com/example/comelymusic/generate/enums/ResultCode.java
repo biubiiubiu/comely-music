@@ -19,8 +19,13 @@ public enum ResultCode {
     NULL_POINT(false, 20003, "空指针异常"),
     HTTP_CLIENT_ERROR(false, 20004, "http client异常"),
 
+
     USERNAME_EXISTS(false, 30001, "用户名已存在!"),
-    USER_NOT_EXIST(false, 30002, "用户不存在!");
+    USER_NOT_EXIST(false, 30002, "用户不存在!"),
+
+    FILE_NAME_ERROR(false, 40001, "获取文件名异常!"),
+    FILE_GET_STREAM_ERROR(false, 40001, "获取文件InputStream异常!"),
+    FILE_TYPE_NOT_SUPPORTED_ERROR(false, 40001, "不支持的文件类型!");
 
 
     // 响应是否成功
