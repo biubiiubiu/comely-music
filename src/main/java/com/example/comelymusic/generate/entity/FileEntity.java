@@ -10,7 +10,9 @@ import java.io.Serializable;
 import com.example.comelymusic.generate.entity.common.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -27,17 +29,18 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("file")
 @ApiModel(value = "File对象", description = "文件表")
+@AllArgsConstructor
 public class FileEntity extends BaseEntity<FileEntity> {
 
     @ApiModelProperty("文件ID")
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
     @ApiModelProperty("文件名")
     @TableField("name")
     private String name;
 
-    @ApiModelProperty("文件hash值，即ObjectKey")
+    @ApiModelProperty("文件的唯一uuid值，在oss中取代文件名")
     @TableField("file_key")
     private String fileKey;
 
@@ -49,22 +52,21 @@ public class FileEntity extends BaseEntity<FileEntity> {
     @TableField("size")
     private Integer size;
 
-    @ApiModelProperty("文件类型，AUDIO-音频，IMAGE-图片，VIDEO-视频，LYRIC-歌词，OTHER-其他")
+    @ApiModelProperty("文件类型，MP3-音频，IMAGE-图片，LYRIC-歌词")
     @TableField("type")
     private String type;
 
-    @ApiModelProperty("存储供应商，COS-腾讯云存储，OSS-阿里云存储")
-    @TableField("storage")
-    private String storage;
+    @ApiModelProperty("文件在OSS中存储位置，用于oss增删改查")
+    @TableField("storage_url")
+    private String storageUrl;
 
-    @ApiModelProperty("文件状态，UPLOADING-上传中，UPLOADED-已上传，CANCEL-已取消")
-    @TableField("status")
-    private String status;
+    @ApiModelProperty("文件公网访问url,例：https：//ossxxxhuhehaote/uuid.jpg")
+    @TableField("visit_url")
+    private String visitUrl;
 
     public FileEntity() {
         super();
     }
-
 
     @Override
     public Serializable pkVal() {

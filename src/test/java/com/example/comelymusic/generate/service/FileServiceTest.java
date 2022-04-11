@@ -1,7 +1,64 @@
 package com.example.comelymusic.generate.service;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class FileServiceTest {
+    @Autowired
+    FileService fileService;
 
+//    public void uploadTest(){
+//        File file = new File("G:\\uploadTest.jpg");
+//        InputStream inputStream =
+//        MultipartFile multipartFile = new MultipartFile() {
+//            @Override
+//            public String getName() {
+//                return null;
+//            }
+//
+//            @Override
+//            public String getOriginalFilename() {
+//                return null;
+//            }
+//
+//            @Override
+//            public String getContentType() {
+//                return null;
+//            }
+//
+//            @Override
+//            public boolean isEmpty() {
+//                return false;
+//            }
+//
+//            @Override
+//            public long getSize() {
+//                return 0;
+//            }
+//
+//            @Override
+//            public byte[] getBytes() throws IOException {
+//                return new byte[0];
+//            }
+//
+//            @Override
+//            public InputStream getInputStream() throws IOException {
+//                return null;
+//            }
+//
+//            @Override
+//            public void transferTo(File dest) throws IOException, IllegalStateException {
+//            }
+//        }
+////        fileService.uploadFile();
+//    }
 }

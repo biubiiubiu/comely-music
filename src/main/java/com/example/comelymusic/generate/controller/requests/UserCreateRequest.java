@@ -29,4 +29,5 @@ public class UserCreateRequest {
 
     // "用户身份，0-用户，1-管理员，2-歌手"
     private Integer role = 0;
+
 }

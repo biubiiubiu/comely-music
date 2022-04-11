@@ -30,7 +30,7 @@ import lombok.experimental.Accessors;
 public class Artist extends BaseEntity<Artist> {
 
     @ApiModelProperty("歌手ID")
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
     @ApiModelProperty("歌手名字")

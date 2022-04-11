@@ -3,29 +3,16 @@ package com.example.comelymusic.generate.controller.requests;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 
 /**
- * description: 文件上传约束
+ * description: 文件上传http格式约束
  *
  * @author: zhangtian
- * @since: 2022-03-28 16:33
+ * @since: 2022-04-11 20:46
  */
 @Data
-public class FileUploadRequest {
-
-    @NotBlank(message = "文件名不能为空")
-    private String name;
-
-    private Long size;
-
-    @NotBlank(message = "后缀名不能为空")
-    private String ext;
-
-    @NotBlank(message = "key不能为空")
-    private String key;
-
-    @NotBlank(message = "key不能为空")
-    private MultipartFile multipartFile;
+public class FileUploadRequest implements Serializable {
+    String username;
+    MultipartFile multipartFile;
 }
-
