@@ -1,5 +1,7 @@
 package com.example.comelymusic.generate.service;
 
+import com.example.comelymusic.generate.common.R;
+import com.example.comelymusic.generate.controller.responses.FileServiceAdmissionTicket;
 import com.example.comelymusic.generate.dto.FileDownloadContentDto;
 import com.example.comelymusic.generate.entity.FileEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -18,4 +20,6 @@ import java.util.Map;
 public interface FileService extends IService<FileEntity> {
     FileEntity uploadFile(MultipartFile multipartFile);
     FileDownloadContentDto downloadFile(String storageUrl);
+
+    FileServiceAdmissionTicket getAdmissionTicket();
 }

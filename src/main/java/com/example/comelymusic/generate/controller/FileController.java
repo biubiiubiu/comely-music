@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -59,6 +60,16 @@ public class FileController {
             return R.ok().message("下载成功！").data(resultInfo);
         }
         return R.error().message("下载失败！");
+    }
+
+    /**
+     * 客户端发起存储文件请求，返回OSS凭证
+     */
+    @GetMapping("/ticket")
+    public R getServiceAdmissionTicket() {
+        Map<String,Object> ticketInfoMap = new HashMap<>();
+        ticketInfoMap.put("ticket",fileService.getAdmissionTicket());
+        return R.ok().data(ticketInfoMap);
     }
 }
 

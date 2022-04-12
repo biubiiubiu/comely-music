@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class MyFileConfig {
+    // todo 这个类准备弃用，后端不再传输文件
 
     @Value("${oss.accessKeyId}")
     private String accessKeyId;
