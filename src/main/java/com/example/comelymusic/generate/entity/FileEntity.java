@@ -50,7 +50,7 @@ public class FileEntity extends BaseEntity<FileEntity> {
 
     @ApiModelProperty("文件大小；单位byte")
     @TableField("size")
-    private Integer size;
+    private Long size;
 
     @ApiModelProperty("文件类型，MP3-音频，IMAGE-图片，LYRIC-歌词")
     @TableField("type")

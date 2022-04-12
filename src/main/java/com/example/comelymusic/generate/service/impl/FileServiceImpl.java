@@ -4,7 +4,6 @@ import com.aliyun.oss.*;
 import com.aliyun.oss.model.OSSObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.comelymusic.generate.common.ComelyMusicException;
-import com.example.comelymusic.generate.common.config.MyFileConfig;
 import com.example.comelymusic.generate.common.utils.MyFileUtil;
 import com.example.comelymusic.generate.dto.FileDownloadContentDto;
 import com.example.comelymusic.generate.entity.FileEntity;
@@ -152,14 +151,14 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
         String type = getFileType(ext);
         String storageUrl = type + dataPath + "/" + fileKey + ext;
         return new FileEntity(null, originalFilename, fileKey, ext,
-                (int) multipartFile.getSize(), type, storageUrl, null);
+                multipartFile.getSize(), type, storageUrl, null);
     }
 
     private String getFileType(String ext) {
         if (".jpg".equals(ext) || ".png".equals(ext)) {
             return FileType.IMAGE.toString();
         } else if (".mp3".equals(ext)) {
-            return FileType.MP3.toString();
+            return FileType.AUDIO.toString();
         } else if (".lyric".equals(ext)) {
             return FileType.LYRIC.toString();
         } else {

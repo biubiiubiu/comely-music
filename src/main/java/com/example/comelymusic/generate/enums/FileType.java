@@ -6,6 +6,6 @@ package com.example.comelymusic.generate.enums;
  */
 public enum FileType {
     IMAGE,
-    MP3,
+    AUDIO,
     LYRIC
 }

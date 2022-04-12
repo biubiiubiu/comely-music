@@ -34,6 +34,9 @@ public class FileController {
     @PostMapping("/upload")
     @ResponseBody
     public R uploadFile(@Validated @RequestBody MultipartFile multipartFile) throws IOException {
+        if (multipartFile==null) {
+            return R.error().message("文件为空！");
+        }
         FileEntity uploadResult = fileService.uploadFile(multipartFile);
         if (uploadResult != null) {
             HashMap<String, Object> resultInfo = new HashMap<>();
