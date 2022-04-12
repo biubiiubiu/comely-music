@@ -35,7 +35,7 @@ public class FileController {
     @PostMapping("/upload")
     @ResponseBody
     public R uploadFile(@Validated @RequestBody MultipartFile multipartFile) throws IOException {
-        if (multipartFile==null) {
+        if (multipartFile == null) {
             return R.error().message("文件为空！");
         }
         FileEntity uploadResult = fileService.uploadFile(multipartFile);
@@ -65,10 +65,10 @@ public class FileController {
     /**
      * 客户端发起存储文件请求，返回OSS凭证
      */
-    @GetMapping("/ticket")
-    public R getServiceAdmissionTicket() {
-        Map<String,Object> ticketInfoMap = new HashMap<>();
-        ticketInfoMap.put("ticket",fileService.getAdmissionTicket());
+    @GetMapping("/oss-token")
+    public R getOssToken() {
+        Map<String, Object> ticketInfoMap = new HashMap<>();
+        ticketInfoMap.put("oss-token", fileService.getOssToken());
         return R.ok().data(ticketInfoMap);
     }
 }

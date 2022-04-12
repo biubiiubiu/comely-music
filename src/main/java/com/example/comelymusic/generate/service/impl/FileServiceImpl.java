@@ -2,10 +2,11 @@ package com.example.comelymusic.generate.service.impl;
 
 import com.aliyun.oss.*;
 import com.aliyun.oss.model.OSSObject;
+import com.aliyuncs.auth.sts.AssumeRoleResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.comelymusic.generate.common.ComelyMusicException;
 import com.example.comelymusic.generate.common.utils.MyFileUtil;
-import com.example.comelymusic.generate.controller.responses.FileServiceAdmissionTicket;
+import com.example.comelymusic.generate.controller.responses.OssTokenResponse;
 import com.example.comelymusic.generate.dto.FileDownloadContentDto;
 import com.example.comelymusic.generate.entity.FileEntity;
 import com.example.comelymusic.generate.enums.FileType;
@@ -43,6 +44,9 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
     @Autowired
     OSS ossClient;
 
+    @Autowired
+    AssumeRoleResponse roleResponse;
+
     /**
      * 上传文件
      *
@@ -66,8 +70,10 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
     }
 
     @Override
-    public FileServiceAdmissionTicket getAdmissionTicket() {
-        return new FileServiceAdmissionTicket();
+    public OssTokenResponse getOssToken() {
+        OssTokenResponse tokenResponse = new OssTokenResponse();
+        tokenResponse.setResponse(roleResponse);
+        return tokenResponse;
     }
 
     // ===================================================================
