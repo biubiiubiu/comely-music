@@ -11,11 +11,46 @@ import lombok.Data;
  */
 @Data
 public class OssTokenResponse {
-    private static final String endpoint = "sts.cn-huhehaote.aliyuncs.com";
-    private static final String bucketName = "comely-music-bucket";
+    private String requestId;
+    private String endpoint;
+    private String bucketName;
+    private String securityToken;
+    private String accessKeySecret;
+    private String accessKeyId;
+    private String expiration;
 
-    /**
-     * 包含Expiration、AccessKeyId、AccessKeySecret、SecurityToken、RequestId
-     */
-    private AssumeRoleResponse response;
+    public OssTokenResponse setRequestId(String requestId) {
+        this.requestId = requestId;
+        return this;
+    }
+
+    public OssTokenResponse setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+        return this;
+    }
+
+    public OssTokenResponse setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+        return this;
+    }
+
+    public OssTokenResponse setSecurityToken(String securityToken) {
+        this.securityToken = securityToken;
+        return this;
+    }
+
+    public OssTokenResponse setAccessKeySecret(String accessKeySecret) {
+        this.accessKeySecret = accessKeySecret;
+        return this;
+    }
+
+    public OssTokenResponse setAccessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
+        return this;
+    }
+
+    public OssTokenResponse setExpiration(String expiration) {
+        this.expiration = expiration;
+        return this;
+    }
 }

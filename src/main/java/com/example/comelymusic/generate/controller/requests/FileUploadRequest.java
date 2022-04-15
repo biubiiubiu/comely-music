@@ -1,7 +1,6 @@
 package com.example.comelymusic.generate.controller.requests;
 
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 
@@ -13,6 +12,13 @@ import java.io.Serializable;
  */
 @Data
 public class FileUploadRequest implements Serializable {
-    String username;
-    MultipartFile multipartFile;
+    /**
+     * test.jpg
+     */
+    private String originalFilename;
+
+    /**
+     * 750012 单位B
+     */
+    private Long size;
 }

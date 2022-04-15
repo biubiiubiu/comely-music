@@ -23,7 +23,8 @@ public class R {
     private Map<String, Object> data = new HashMap<>();
 
     // 构造器私有
-    private R(){}
+    private R() {
+    }
 
     // 通用返回成功
     public static R ok() {
@@ -52,7 +53,9 @@ public class R {
         return r;
     }
 
-    /**------------使用链式编程，返回类本身-----------**/
+    /**
+     * ------------使用链式编程，返回类本身-----------
+     **/
 
     // 自定义返回数据
     public R data(Map<String,Object> map) {

@@ -2,17 +2,14 @@ package com.example.comelymusic.generate.controller;
 
 
 import com.example.comelymusic.generate.common.R;
-import com.example.comelymusic.generate.dto.FileDownloadContentDto;
-import com.example.comelymusic.generate.entity.FileEntity;
+import com.example.comelymusic.generate.controller.requests.FileUploadRequest;
 import com.example.comelymusic.generate.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,39 +27,6 @@ public class FileController {
     FileService fileService;
 
     /**
-     * 上传文件，返回文件基本信息
-     */
-    @PostMapping("/upload")
-    @ResponseBody
-    public R uploadFile(@Validated @RequestBody MultipartFile multipartFile) throws IOException {
-        if (multipartFile == null) {
-            return R.error().message("文件为空！");
-        }
-        FileEntity uploadResult = fileService.uploadFile(multipartFile);
-        if (uploadResult != null) {
-            HashMap<String, Object> resultInfo = new HashMap<>();
-            resultInfo.put("fileInfo", uploadResult);
-            return R.ok().message("上传成功！").data(resultInfo);
-        }
-        return R.error().message("上传失败！");
-    }
-
-    /**
-     * 根据storageUrl下载文件，返回文件基本信息和byte[]
-     */
-    @PostMapping("/download")
-    @ResponseBody
-    public R downloadByStorageUrl(@Validated @RequestBody String storageUrl) {
-        FileDownloadContentDto downloadResult = fileService.downloadFile(storageUrl);
-        if (downloadResult != null) {
-            HashMap<String, Object> resultInfo = new HashMap<>();
-            resultInfo.put("fileInfo", downloadResult);
-            return R.ok().message("下载成功！").data(resultInfo);
-        }
-        return R.error().message("下载失败！");
-    }
-
-    /**
      * 客户端发起存储文件请求，返回OSS凭证
      */
     @GetMapping("/oss-token")
@@ -71,5 +35,36 @@ public class FileController {
         ticketInfoMap.put("oss-token", fileService.getOssToken());
         return R.ok().data(ticketInfoMap);
     }
+
+    /**
+     * 根据文件基本信息，生成Oss信息并返回
+     */
+    @PostMapping("/uploading")
+    @ResponseBody
+    public R getUploadingInfo(@Validated @RequestBody List<FileUploadRequest> fileUploadRequestList) {
+        Map<String, Object> uploadInfoMap = new HashMap<>();
+        uploadInfoMap.put("uploadInfoMap",fileService.getUploadInfo(fileUploadRequestList));
+        return R.ok().data(uploadInfoMap);
+    }
+
+    /**
+     * 上传完成，刷新文件状态，并返回新的文件信息
+     */
+    @PutMapping("/upload-success")
+    @ResponseBody
+    public R setUploadSuccess() {
+        return R.ok();
+    }
+
+    /**
+     * 取消上传或者因为网络原因上传失败，删除mysql文件数据，并返回新的文件信息
+     */
+    @PutMapping("/upload-failed")
+    @ResponseBody
+    public R setUploadFailed() {
+        return R.ok();
+    }
+
+
 }
 
