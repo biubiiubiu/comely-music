@@ -1,5 +1,6 @@
 package com.example.comelymusic.generate.common.utils;
 
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @since: 2022-04-16 11:28
  */
 @Component
-public class RedisUtil  {
+public class RedisUtils {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
@@ -65,17 +66,27 @@ public class RedisUtil  {
 
     /**
      * 实现命令：SET key value EX seconds，设置key-value和超时时间（秒）
+     *
      * @param timeout（以秒为单位）
      */
     public void set(String key, String value, long timeout) {
         redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.SECONDS);
     }
 
+    public void setObject(String key, Object object, long timeout) {
+        redisTemplate.opsForValue().set(key, JSON.toJSONString(object), timeout, TimeUnit.SECONDS);
+    }
+
+    public Object getObject(String key, Class clazz) {
+        String value = redisTemplate.opsForValue().get(key);
+        return JSON.parseObject(value, clazz);
+    }
+
     /**
      * 实现命令：GET key，返回 key所关联的字符串值。
      */
     public String get(String key) {
-        return (String)redisTemplate.opsForValue().get(key);
+        return (String) redisTemplate.opsForValue().get(key);
     }
 
     // Hash（哈希表）
@@ -127,7 +138,7 @@ public class RedisUtil  {
      * @return 列表key的头元素。
      */
     public String lpop(String key) {
-        return (String)redisTemplate.opsForList().leftPop(key);
+        return (String) redisTemplate.opsForList().leftPop(key);
     }
 
     /**

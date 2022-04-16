@@ -49,6 +49,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
      */
     @Override
     public OssTokenResponse getOssToken() {
+        //todo 先检查redis有没有，没有的话新建一个token
         OssTokenResponse tokenResponse = new OssTokenResponse();
         String requestId = roleResponse.getRequestId();
         String accessKeyId = roleResponse.getCredentials().getAccessKeyId();

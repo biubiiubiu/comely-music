@@ -42,7 +42,7 @@ public class OssConfig {
         request.setSysMethod(MethodType.POST);
         request.setRoleArn(roleArn);
         request.setRoleSessionName("ztian");
-        request.setDurationSeconds(3600L); // 设置临时访问凭证的有效时间为3600秒。
+        request.setDurationSeconds(3600L); // 设置临时访问凭证的有效时间为1小时(最多一小时)
         return client.getAcsResponse(request);
     }
 }

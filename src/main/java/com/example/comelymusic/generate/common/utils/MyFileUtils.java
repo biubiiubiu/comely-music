@@ -1,5 +1,6 @@
 package com.example.comelymusic.generate.common.utils;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -10,7 +11,8 @@ import java.io.*;
  * @author: zhangtian
  * @since: 2022-04-11 16:35
  */
-public class MyFileUtil {
+@Component
+public class MyFileUtils {
     private final static int MAX_READ_LIMIT = 100;
 
     /**
