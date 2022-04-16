@@ -3,6 +3,7 @@ package com.example.comelymusic.generate.controller;
 
 import com.example.comelymusic.generate.common.R;
 import com.example.comelymusic.generate.controller.requests.FileUploadRequest;
+import com.example.comelymusic.generate.controller.responses.FileUploadResponse;
 import com.example.comelymusic.generate.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -43,7 +44,10 @@ public class FileController {
     @ResponseBody
     public R getUploadingInfo(@Validated @RequestBody List<FileUploadRequest> fileUploadRequestList) {
         Map<String, Object> uploadInfoMap = new HashMap<>();
-        uploadInfoMap.put("uploadInfoMap",fileService.getUploadInfo(fileUploadRequestList));
+        Map<String, FileUploadResponse> uploadInfo = fileService.getUploadInfo(fileUploadRequestList);
+        for (Map.Entry<String, FileUploadResponse> entry : uploadInfo.entrySet()) {
+            uploadInfoMap.put(entry.getKey(), entry.getValue());
+        }
         return R.ok().data(uploadInfoMap);
     }
 
