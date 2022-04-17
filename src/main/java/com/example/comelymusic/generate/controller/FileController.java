@@ -32,10 +32,8 @@ public class FileController {
     @PostMapping("/uploading")
     @ResponseBody
     public R getUploadingInfo(@Validated @RequestBody FileUploadRequest fileUploadRequestList) {
-        Map<String, Object> uploadInfoMap = new HashMap<>();
         FileUploadResponse uploadInfo = fileService.getUploadInfo(fileUploadRequestList);
-        uploadInfoMap.put("uploadInfo", uploadInfo);
-        return R.ok().data(uploadInfoMap);
+        return R.ok().data(uploadInfo);
     }
 
     /**

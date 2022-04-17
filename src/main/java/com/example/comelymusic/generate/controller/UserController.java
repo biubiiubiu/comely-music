@@ -33,7 +33,7 @@ public class UserController {
     public R list() {
         //调用service的方法查询
         List<User> userList = userService.list(null);
-        return R.ok().data("items", userList).message("用户列表");
+        return R.ok().data(userList).message("用户列表");
     }
 
 
