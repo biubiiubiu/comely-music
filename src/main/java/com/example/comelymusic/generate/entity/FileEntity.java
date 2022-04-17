@@ -44,10 +44,6 @@ public class FileEntity extends BaseEntity<FileEntity> {
     @TableField("file_key")
     private String fileKey;
 
-    @ApiModelProperty("文件后缀名")
-    @TableField("ext")
-    private String ext;
-
     @ApiModelProperty("文件大小；单位byte")
     @TableField("size")
     private Long size;

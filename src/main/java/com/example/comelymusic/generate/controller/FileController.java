@@ -41,17 +41,10 @@ public class FileController {
      */
     @PutMapping("/upload-success")
     @ResponseBody
-    public R setUploadSuccess() {
-        return R.ok();
-    }
+    public R setUploadSuccess(@RequestBody FileUploadRequest fileUploadRequestList) {
+        // todo 存储文件信息
 
-    /**
-     * 取消上传或者因为网络原因上传失败，删除mysql文件数据，并返回新的文件信息
-     */
-    @PutMapping("/upload-failed")
-    @ResponseBody
-    public R setUploadFailed() {
-        return R.ok();
+        return R.ok().data(Boolean.TRUE);
     }
 }
 
