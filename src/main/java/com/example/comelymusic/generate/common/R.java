@@ -58,13 +58,13 @@ public class R {
      **/
 
     // 自定义返回数据
-    public R data(Map<String,Object> map) {
+    public R data(Map<String, Object> map) {
         this.setData(map);
         return this;
     }
 
     // 通用设置data
-    public R data(String key,Object value) {
+    public R data(String key, Object value) {
         this.data.put(key, value);
         return this;
     }

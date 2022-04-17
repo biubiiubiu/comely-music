@@ -26,8 +26,9 @@ public class OssConfig {
     @Value("${oss.token.accessKeySecret}")
     private String accesskeySecret;
 
-    @Value("${oss.token.rolearn}")
-    private  String roleArn = "acs:ram::1256516683186490:role/ramosstest";
+    private final static String roleArn = "acs:ram::1256516683186490:role/ramosstest";
+
+    public final static long EFFECTIVE_TIME = 3600L;
 
 
     @Bean
@@ -42,7 +43,7 @@ public class OssConfig {
         request.setSysMethod(MethodType.POST);
         request.setRoleArn(roleArn);
         request.setRoleSessionName("ztian");
-        request.setDurationSeconds(3600L); // 设置临时访问凭证的有效时间为1小时(最多一小时)
+        request.setDurationSeconds(EFFECTIVE_TIME); // 设置临时访问凭证的有效时间为1小时(最多一小时)
         return client.getAcsResponse(request);
     }
 }

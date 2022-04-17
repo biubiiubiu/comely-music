@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 /**
  * description: 文件上传请求结果，包含storage_url
  *
@@ -14,5 +16,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileUploadResponse {
-    private String storageUrl;
+    /**
+     * 这一批文件的ossToken
+     */
+    private OssTokenInfo ossTokenInfo;
+
+    /**
+     * 这一批文件的map(originalName,storageUrl)
+     */
+    private Map<String, String> fileStorageUrlMap;
 }

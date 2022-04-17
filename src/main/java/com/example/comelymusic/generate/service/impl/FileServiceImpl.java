@@ -3,9 +3,11 @@ package com.example.comelymusic.generate.service.impl;
 import com.aliyun.oss.*;
 import com.aliyuncs.auth.sts.AssumeRoleResponse;
 import com.example.comelymusic.generate.common.ComelyMusicException;
+import com.example.comelymusic.generate.common.config.OssConfig;
+import com.example.comelymusic.generate.common.utils.RedisUtils;
 import com.example.comelymusic.generate.controller.requests.FileUploadRequest;
 import com.example.comelymusic.generate.controller.responses.FileUploadResponse;
-import com.example.comelymusic.generate.controller.responses.OssTokenResponse;
+import com.example.comelymusic.generate.controller.responses.OssTokenInfo;
 import com.example.comelymusic.generate.entity.FileEntity;
 import com.example.comelymusic.generate.enums.FileType;
 import com.example.comelymusic.generate.enums.ResultCode;
@@ -30,8 +32,13 @@ import java.util.*;
 @Service
 @Slf4j
 public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> implements FileService {
-    private static final String ENDPOINT = "oss-cn-huhehaote.aliyuncs.com";
-    private final String BUCKET_NAME = "comely-music-bucket";
+    private final static String ENDPOINT = "oss-cn-huhehaote.aliyuncs.com";
+    private final static String BUCKET_NAME = "comely-music-bucket";
+    /**
+     * 存储到redis的sts-token的key前缀，加上用户名就可以组成key
+     */
+    private final static String STS_TOKEN_KEY_PREFIX = "sts-token-";
+//    private final static String LOGIN_TOKEN_KEY_PREFIX = "login-token-";
 
     @Autowired
     FileMapper fileMapper;
@@ -42,52 +49,62 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
     @Autowired
     AssumeRoleResponse roleResponse;
 
-    /**
-     * 获取STS凭证
-     *
-     * @return OssTokenResponse
-     */
-    @Override
-    public OssTokenResponse getOssToken() {
-        //todo 先检查redis有没有，没有的话新建一个token
-        OssTokenResponse tokenResponse = new OssTokenResponse();
-        String requestId = roleResponse.getRequestId();
-        String accessKeyId = roleResponse.getCredentials().getAccessKeyId();
-        String accessKeySecret = roleResponse.getCredentials().getAccessKeySecret();
-        String securityToken = roleResponse.getCredentials().getSecurityToken();
-        String expiration = roleResponse.getCredentials().getExpiration();
-        tokenResponse.setRequestId(requestId)
-                .setEndpoint(ENDPOINT)
-                .setBucketName(BUCKET_NAME)
-                .setAccessKeyId(accessKeyId)
-                .setAccessKeySecret(accessKeySecret)
-                .setSecurityToken(securityToken)
-                .setExpiration(expiration);
-        return tokenResponse;
-    }
+    @Autowired
+    RedisUtils redisUtils;
 
     /**
      * 客户端请求上传文件，生成并返回需要上传的文件信息
      *
-     * @param fileUploadRequestList 单个或多个文件
+     * @param fileUploadRequest 包含用户名，和单个或多个文件信息
      * @return Map(originalFilename, storageUrl)
      */
     @Override
-    public Map<String, FileUploadResponse> getUploadInfo(List<FileUploadRequest> fileUploadRequestList) {
-        Map<String, FileUploadResponse> responseMap = new HashMap<>();
+    public FileUploadResponse getUploadInfo(FileUploadRequest fileUploadRequest) {
+        FileUploadResponse responseMap = new FileUploadResponse();
+        OssTokenInfo ossToken = getOssToken(fileUploadRequest.getUsername());
+        responseMap.setOssTokenInfo(ossToken);
+        // 多文件一次批量上传时间设置为同一天
         String dataPath = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
-        for (FileUploadRequest request : fileUploadRequestList) {
-            responseMap.put(request.getOriginalFilename(), new FileUploadResponse(getFileStorageUrl(request,
-                    dataPath)));
+        Map<String, String> fileStorageUrlMap = new HashMap<>();
+        for (FileUploadRequest.FileUploadInfo request : fileUploadRequest.getFileUploadInfoList()) {
+            String storageUrl = getFileStorageUrl(request, dataPath);
+            fileStorageUrlMap.put(request.getOriginalFilename(), storageUrl);
         }
+        responseMap.setFileStorageUrlMap(fileStorageUrlMap);
         return responseMap;
     }
 
     // ===================================================================
 
+    private OssTokenInfo getOssToken(String username) {
+        // 先检查redis有没有，没有的话新建一个token
+        String key = STS_TOKEN_KEY_PREFIX + username;
+        OssTokenInfo ossToken = (OssTokenInfo) redisUtils.getObject(key, OssTokenInfo.class);
+        if (ossToken != null) {
+            return ossToken;
+        } else {
+            OssTokenInfo newOssToken = new OssTokenInfo();
+            String requestId = roleResponse.getRequestId();
+            String accessKeyId = roleResponse.getCredentials().getAccessKeyId();
+            String accessKeySecret = roleResponse.getCredentials().getAccessKeySecret();
+            String securityToken = roleResponse.getCredentials().getSecurityToken();
+            String expiration = roleResponse.getCredentials().getExpiration();
+            newOssToken.setRequestId(requestId)
+                    .setEndpoint(ENDPOINT)
+                    .setBucketName(BUCKET_NAME)
+                    .setAccessKeyId(accessKeyId)
+                    .setAccessKeySecret(accessKeySecret)
+                    .setSecurityToken(securityToken)
+                    .setExpiration(expiration);
+            // oss-token最大过期时间是3600L
+            redisUtils.setObject(key, newOssToken, OssConfig.EFFECTIVE_TIME);
+            return newOssToken;
+        }
+    }
+
     // 文件在OSS的存储位置
-    private String getFileStorageUrl(FileUploadRequest fileUploadRequest, String dataPath) {
-        String originalFilename = fileUploadRequest.getOriginalFilename();
+    private String getFileStorageUrl(FileUploadRequest.FileUploadInfo fileUploadInfo, String dataPath) {
+        String originalFilename = fileUploadInfo.getOriginalFilename();
         String fileKey = UUID.randomUUID().toString();
         String ext;
         if (originalFilename != null) {
@@ -97,6 +114,18 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
         }
         String type = getFileType(ext);
         return type + dataPath + "/" + fileKey + ext;
+    }
+
+    private String getFileType(String ext) {
+        if (".jpg".equals(ext) || ".png".equals(ext)) {
+            return FileType.IMAGE.toString();
+        } else if (".mp3".equals(ext)) {
+            return FileType.AUDIO.toString();
+        } else if (".lyric".equals(ext)) {
+            return FileType.LYRIC.toString();
+        } else {
+            throw new ComelyMusicException(ResultCode.FILE_TYPE_NOT_SUPPORTED_ERROR);
+        }
     }
 
 //    public FileEntity upload(MultipartFile multipartFile) {
@@ -186,16 +215,4 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
 //        return new FileEntity(null, originalFilename, fileKey, ext,
 //                multipartFile.getSize(), type, storageUrl, null);
 //    }
-
-    private String getFileType(String ext) {
-        if (".jpg".equals(ext) || ".png".equals(ext)) {
-            return FileType.IMAGE.toString();
-        } else if (".mp3".equals(ext)) {
-            return FileType.AUDIO.toString();
-        } else if (".lyric".equals(ext)) {
-            return FileType.LYRIC.toString();
-        } else {
-            throw new ComelyMusicException(ResultCode.FILE_TYPE_NOT_SUPPORTED_ERROR);
-        }
-    }
 }

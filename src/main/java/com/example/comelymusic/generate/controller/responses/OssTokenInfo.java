@@ -1,6 +1,5 @@
 package com.example.comelymusic.generate.controller.responses;
 
-import com.aliyuncs.auth.sts.AssumeRoleResponse;
 import lombok.Data;
 
 /**
@@ -10,7 +9,7 @@ import lombok.Data;
  * @since: 2022-04-12 16:20
  */
 @Data
-public class OssTokenResponse {
+public class OssTokenInfo {
     private String requestId;
     private String endpoint;
     private String bucketName;
@@ -19,37 +18,37 @@ public class OssTokenResponse {
     private String accessKeyId;
     private String expiration;
 
-    public OssTokenResponse setRequestId(String requestId) {
+    public OssTokenInfo setRequestId(String requestId) {
         this.requestId = requestId;
         return this;
     }
 
-    public OssTokenResponse setEndpoint(String endpoint) {
+    public OssTokenInfo setEndpoint(String endpoint) {
         this.endpoint = endpoint;
         return this;
     }
 
-    public OssTokenResponse setBucketName(String bucketName) {
+    public OssTokenInfo setBucketName(String bucketName) {
         this.bucketName = bucketName;
         return this;
     }
 
-    public OssTokenResponse setSecurityToken(String securityToken) {
+    public OssTokenInfo setSecurityToken(String securityToken) {
         this.securityToken = securityToken;
         return this;
     }
 
-    public OssTokenResponse setAccessKeySecret(String accessKeySecret) {
+    public OssTokenInfo setAccessKeySecret(String accessKeySecret) {
         this.accessKeySecret = accessKeySecret;
         return this;
     }
 
-    public OssTokenResponse setAccessKeyId(String accessKeyId) {
+    public OssTokenInfo setAccessKeyId(String accessKeyId) {
         this.accessKeyId = accessKeyId;
         return this;
     }
 
-    public OssTokenResponse setExpiration(String expiration) {
+    public OssTokenInfo setExpiration(String expiration) {
         this.expiration = expiration;
         return this;
     }
