@@ -2,12 +2,14 @@ package com.example.comelymusic.generate.service.impl;
 
 import com.aliyun.oss.*;
 import com.aliyuncs.auth.sts.AssumeRoleResponse;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.comelymusic.generate.common.ComelyMusicException;
 import com.example.comelymusic.generate.common.config.OssConfig;
 import com.example.comelymusic.generate.common.utils.RedisUtils;
-import com.example.comelymusic.generate.controller.requests.FileUploadRequest;
-import com.example.comelymusic.generate.controller.responses.FileUploadResponse;
-import com.example.comelymusic.generate.controller.responses.OssTokenInfo;
+import com.example.comelymusic.generate.controller.requests.file.FileCommonRequest;
+import com.example.comelymusic.generate.controller.requests.file.FileUploadRequest;
+import com.example.comelymusic.generate.controller.responses.file.FileUploadResponse;
+import com.example.comelymusic.generate.controller.responses.file.OssTokenInfo;
 import com.example.comelymusic.generate.entity.FileEntity;
 import com.example.comelymusic.generate.enums.FileType;
 import com.example.comelymusic.generate.enums.ResultCode;
@@ -74,9 +76,41 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
         return responseMap;
     }
 
-    // ===================================================================
+    /**
+     * 保存成功上传的文件信息
+     *
+     * @param request 成功上传文件的基本信息
+     * @return 全部上传成功
+     */
+    @Override
+    public Boolean saveUploadInfo(FileCommonRequest request) {
+        Map<String, FileCommonRequest.CommonInfo> fileKeyInfoMap = request.getFileKeyInfoMap();
+        int num = 0;
+        int total = fileKeyInfoMap.size();
+        for (String key : fileKeyInfoMap.keySet()) {
+            // 防止插入重复的file_key导致SQLEXCEPTION
+            QueryWrapper<FileEntity> wrapper = new QueryWrapper<>();
+            wrapper.eq("file_key", key);
+            FileEntity entity = fileMapper.selectOne(wrapper);
+            if (entity != null) {
+                fileKeyInfoMap.remove(key);
+                total--;
+            }
+        }
+        for (Map.Entry<String, FileCommonRequest.CommonInfo> entry : fileKeyInfoMap.entrySet()) {
+            num += fileMapper.insert(commonRequest2Entity(entry.getKey(), entry.getValue()));
+        }
+        return num == total;
+    }
 
-    private OssTokenInfo getOssToken(String username) {
+    /**
+     * 获取oss-token
+     *
+     * @param username 用户名
+     * @return OssTokenInfo
+     */
+    @Override
+    public OssTokenInfo getOssToken(String username) {
         // 先检查redis有没有，没有的话新建一个token
         String key = STS_TOKEN_KEY_PREFIX + username;
         OssTokenInfo ossToken = (OssTokenInfo) redisUtils.getObject(key, OssTokenInfo.class);
@@ -102,117 +136,49 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
         }
     }
 
+    // ===================================================================
+
     // 文件在OSS的存储位置
     private String getFileStorageUrl(FileUploadRequest.FileUploadInfo fileUploadInfo, String dataPath) {
         String originalFilename = fileUploadInfo.getOriginalFilename();
         String fileKey = UUID.randomUUID().toString();
+        String type = getFileType(originalFilename);
+        String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+        return type + "/" + dataPath + "/" + fileKey + ext;
+    }
+
+    private String getFileType(String originalFilename) {
         String ext;
         if (originalFilename != null) {
             ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+            switch (ext) {
+                case ".jpg":
+                case ".png":
+                    return FileType.IMAGE.toString();
+                case ".mp3":
+                    return FileType.AUDIO.toString();
+                case ".lyric":
+                    return FileType.LYRIC.toString();
+                default:
+                    throw new ComelyMusicException(ResultCode.FILE_TYPE_NOT_SUPPORTED_ERROR);
+            }
         } else {
             throw new ComelyMusicException(ResultCode.FILE_NAME_ERROR);
         }
-        String type = getFileType(ext);
-        return type + dataPath + "/" + fileKey + ext;
     }
 
-    private String getFileType(String ext) {
-        if (".jpg".equals(ext) || ".png".equals(ext)) {
-            return FileType.IMAGE.toString();
-        } else if (".mp3".equals(ext)) {
-            return FileType.AUDIO.toString();
-        } else if (".lyric".equals(ext)) {
-            return FileType.LYRIC.toString();
-        } else {
-            throw new ComelyMusicException(ResultCode.FILE_TYPE_NOT_SUPPORTED_ERROR);
-        }
+    private FileEntity commonRequest2Entity(String fileKey, FileCommonRequest.CommonInfo commonInfo) {
+        FileEntity entity = new FileEntity();
+        entity.setName(commonInfo.getFilename());
+        entity.setFileKey(fileKey);
+        entity.setSize(commonInfo.getSize());
+        entity.setType(getFileType(commonInfo.getFilename()));
+        entity.setStorageUrl(commonInfo.getStorageUrl());
+        entity.setVisitUrl(getVisitUrlByKey(fileKey));
+        return entity;
     }
 
-//    public FileEntity upload(MultipartFile multipartFile) {
-//        // 创建OSSClient实例。
-////        OSS ossClient = MyFileConfig.getOssClient();
-//
-//        try {
-//            InputStream inputStream = multipartFile.getInputStream();
-//            // 根据日期构建目录
-//            FileEntity file = getFileStorageUrl(multipartFile);
-//            //文件上传OSS
-//            ossClient.putObject(bucketName, file.getStorageUrl(), inputStream);
-//            file.setVisitUrl("https://" + bucketName + "." + endpoint + "/" + file.getFileKey());
-//            // 文件信息存入数据库
-//            fileMapper.insert(file);
-//            return file;
-//        } catch (OSSException oe) {
-//            log.error("Caught an OSSException, which means your request made it to OSS, but was rejected with an error response for some reason." +
-//                    "\nError Message:" + oe.getErrorMessage() + "\nRequest ID:" + oe.getRequestId() + "\nHost ID:" + oe.getHostId());
-//        } catch (ClientException ce) {
-//            log.error("Caught an ClientException, which means the client encountered "
-//                    + "a serious internal problem while trying to communicate with OSS, "
-//                    + "such as not being able to access the network." + "\nError Message:" + ce.getMessage());
-//        } catch (IOException e) {
-//            log.error("获取文件流失败！");
-//        } finally {
-//            if (ossClient != null) {
-//                ossClient.shutdown();
-//            }
-//        }
-//        return null;
-//    }
-
-//    public FileDownloadContentDto download(String storageUrl) {
-//        // 创建OSSClient实例。
-////        OSS ossClient = MyFileConfig.getOssClient();
-//
-//        try {
-//            // 调用ossClient.getObject返回一个OSSObject实例，该实例包含文件内容及文件元信息。
-//            OSSObject ossObject = ossClient.getObject(bucketName, storageUrl);
-//            // 调用ossObject.getObjectContent获取文件输入流，可读取此输入流获取其内容。
-//            InputStream content = ossObject.getObjectContent();
-//            byte[] contentBytes = MyFileUtil.inputStream2Bytes(content);
-//            FileDownloadContentDto result = new FileDownloadContentDto();
-//            result.setFileContent(contentBytes);
-//            FileEntity fileEntity = getFileEntityByStorageUrl(storageUrl);
-//            result.setFileEntityInfo(fileEntity);
-//            // 数据读取完成后，获取的流必须关闭，否则会造成连接泄漏，导致请求无连接可用，程序无法正常工作。
-//            content.close();
-//            return result;
-//        } catch (OSSException oe) {
-//            log.error("Caught an OSSException, which means your request made it to OSS, but was rejected with an error response for some reason." +
-//                    "\nError Message:" + oe.getErrorMessage() + "\nRequest ID:" + oe.getRequestId() + "\nHost ID:" + oe.getHostId());
-//        } catch (ClientException ce) {
-//            log.error("Caught an ClientException, which means the client encountered "
-//                    + "a serious internal problem while trying to communicate with OSS, "
-//                    + "such as not being able to access the network." + "\nError Message:" + ce.getMessage());
-//        } catch (IOException e) {
-//            log.error("获取文件流失败！");
-//        } finally {
-//            if (ossClient != null) {
-//                ossClient.shutdown();
-//            }
-//        }
-//        return null;
-//    }
-//
-//    private FileEntity getFileEntityByStorageUrl(String storageUrl) {
-//        QueryWrapper<FileEntity> wrapper = new QueryWrapper<>();
-//        wrapper.eq("storage_url", storageUrl);
-//        return fileMapper.selectOne(wrapper);
-//    }
-
-//    private FileEntity getFileStorageInfo(MultipartFile multipartFile) {
-//        String dataPath = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
-//
-//        String originalFilename = multipartFile.getOriginalFilename();
-//        String ext;
-//        if (originalFilename != null) {
-//            ext = originalFilename.substring(originalFilename.lastIndexOf("."));
-//        } else {
-//            throw new ComelyMusicException(ResultCode.FILE_NAME_ERROR);
-//        }
-//        String fileKey = UUID.randomUUID().toString();
-//        String type = getFileType(ext);
-//        String storageUrl = type + dataPath + "/" + fileKey + ext;
-//        return new FileEntity(null, originalFilename, fileKey, ext,
-//                multipartFile.getSize(), type, storageUrl, null);
-//    }
+    private String getVisitUrlByKey(String fileKey) {
+        return "https://" + BUCKET_NAME + "." + ENDPOINT + "/" + fileKey;
+    }
 }

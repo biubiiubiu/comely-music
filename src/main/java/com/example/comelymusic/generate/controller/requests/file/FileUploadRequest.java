@@ -1,4 +1,4 @@
-package com.example.comelymusic.generate.controller.requests;
+package com.example.comelymusic.generate.controller.requests.file;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -2,15 +2,14 @@ package com.example.comelymusic.generate.controller;
 
 
 import com.example.comelymusic.generate.common.R;
-import com.example.comelymusic.generate.controller.requests.FileUploadRequest;
-import com.example.comelymusic.generate.controller.responses.FileUploadResponse;
+import com.example.comelymusic.generate.controller.requests.file.FileCommonRequest;
+import com.example.comelymusic.generate.controller.requests.file.FileUploadRequest;
+import com.example.comelymusic.generate.controller.responses.file.FileUploadResponse;
+import com.example.comelymusic.generate.controller.responses.file.OssTokenInfo;
 import com.example.comelymusic.generate.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>
@@ -39,12 +38,21 @@ public class FileController {
     /**
      * 上传完成，刷新文件状态，并返回新的文件信息
      */
-    @PutMapping("/upload-success")
+    @PostMapping("/upload-success")
     @ResponseBody
-    public R setUploadSuccess(@RequestBody FileUploadRequest fileUploadRequestList) {
-        // todo 存储文件信息
+    public R setUploadSuccess(@RequestBody FileCommonRequest commonRequest) {
+        Boolean isSuccess = fileService.saveUploadInfo(commonRequest);
+        return R.ok().data(isSuccess);
+    }
 
-        return R.ok().data(Boolean.TRUE);
+    /**
+     * 获取用户的oss-token
+     */
+    @GetMapping("/oss-token/{username}")
+    @ResponseBody
+    public R getDownloadingInfo(@Validated @PathVariable("username") String username) {
+        OssTokenInfo ossToken = fileService.getOssToken(username);
+        return R.ok().data(ossToken);
     }
 }
 

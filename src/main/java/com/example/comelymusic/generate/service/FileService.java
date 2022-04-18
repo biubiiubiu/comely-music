@@ -1,7 +1,9 @@
 package com.example.comelymusic.generate.service;
 
-import com.example.comelymusic.generate.controller.requests.FileUploadRequest;
-import com.example.comelymusic.generate.controller.responses.FileUploadResponse;
+import com.example.comelymusic.generate.controller.requests.file.FileCommonRequest;
+import com.example.comelymusic.generate.controller.requests.file.FileUploadRequest;
+import com.example.comelymusic.generate.controller.responses.file.FileUploadResponse;
+import com.example.comelymusic.generate.controller.responses.file.OssTokenInfo;
 import com.example.comelymusic.generate.entity.FileEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -15,4 +17,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface FileService extends IService<FileEntity> {
     FileUploadResponse getUploadInfo(FileUploadRequest fileUploadRequest);
+    Boolean saveUploadInfo(FileCommonRequest fileCommonRequest);
+    OssTokenInfo getOssToken(String username);
 }
