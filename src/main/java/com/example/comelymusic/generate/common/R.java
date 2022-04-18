@@ -17,7 +17,7 @@ public class R {
 
     private String message;
 
-    private Object data = new Object();
+    private Object data;
 
     // 构造器私有
     private R() {

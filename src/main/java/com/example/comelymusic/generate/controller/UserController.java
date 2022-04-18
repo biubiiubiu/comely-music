@@ -36,8 +36,6 @@ public class UserController {
         return R.ok().data(userList).message("用户列表");
     }
 
-
-
     /**
      * 新增用户
      */
@@ -53,7 +51,7 @@ public class UserController {
     /**
      * 删除用户
      */
-    @DeleteMapping("/delete/{username}")
+    @PutMapping("/delete/{username}")
     public R delete(@PathVariable("username") String username) {
         int delete = userService.deleteByUsername(username);
         if (delete == 0) {
