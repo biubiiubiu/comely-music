@@ -21,5 +21,8 @@ public interface UserService extends IService<User> {
     User selectByUsername(String username) throws ComelyMusicException;
     int update(UserCreateRequest userCreateRequest) throws ComelyMusicException;
 
-    LoginResponse login(LoginRequest loginRequest);
+    Boolean judgeNewUser(LoginRequest request);
+    LoginResponse loginOrRegister(LoginRequest loginRequest);
+    void logout(String username);
+    boolean getLoginStatus(String username);
 }

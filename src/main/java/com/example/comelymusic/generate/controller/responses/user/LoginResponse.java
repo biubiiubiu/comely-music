@@ -1,10 +1,5 @@
 package com.example.comelymusic.generate.controller.responses.user;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.example.comelymusic.generate.entity.User;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -15,12 +10,18 @@ import lombok.Data;
  */
 @Data
 public class LoginResponse {
+    private Boolean isNewUser;
     private String username;
     private String nickname;
     private String gender;
     private String avatarId;
     private Integer role;
     private String loginToken;
+
+    public LoginResponse setIsNewUser(Boolean isNewUser){
+        this.isNewUser=isNewUser;
+        return this;
+    }
 
     public LoginResponse setUsername(String username) {
         this.username = username;

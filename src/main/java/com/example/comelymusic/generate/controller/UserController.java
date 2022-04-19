@@ -75,15 +75,40 @@ public class UserController {
     }
 
     /**
-     * 用户登录
+     * 用户登录时，判断是否时新用户（username）
+     * 返回是否是新用户
      */
-    @PostMapping("/login")
-    public R login(@Validated @RequestBody LoginRequest loginRequest) {
-        LoginResponse response = userService.login(loginRequest);
+    @PostMapping("/judge-newuser")
+    public R judgeNewUser(@Validated @RequestBody LoginRequest loginRequest){
+        Boolean isNewUser = userService.judgeNewUser(loginRequest);
+        return R.ok().data(isNewUser);
+    }
+
+    /**
+     * 用户登录,如果用户没有创建就创建一个新用户
+     */
+    @PostMapping("/login-register")
+    public R loginOrRegister(@Validated @RequestBody LoginRequest loginRequest) {
+        LoginResponse response = userService.loginOrRegister(loginRequest);
         if (response != null) {
             return R.ok().data(response);
         }
         return R.setResult(ResultCode.USER_LOGIN_FAILED);
+    }
+
+    /**
+     * 退出登录
+     */
+    @PutMapping("/logout/{username}")
+    public R logout(@PathVariable("username") String username) {
+        userService.logout(username);
+        return R.ok();
+    }
+
+    @GetMapping("/login-status/{username}")
+    public R loginStatus(@PathVariable("username") String username){
+        Boolean status = userService.getLoginStatus(username);
+        return R.ok().data(status);
     }
 }
 

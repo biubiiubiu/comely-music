@@ -58,25 +58,14 @@ public class FileController {
         return R.ok().data(ossToken);
     }
 
-    /**
-     * 获取用户的oss-token
-     */
-    @GetMapping("/oss-token")
-    @ResponseBody
-    public R getDownloadingSts(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-
-        return R.ok().data(token);
-    }
-
-    /**
-     * 测试
-     */
-    @PostMapping("/test")
-    @ResponseBody
-    public R test(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        return R.ok().data(token);
-    }
+//    /**
+//     * 测试
+//     */
+//    @PostMapping("/test")
+//    @ResponseBody
+//    public R test(HttpServletRequest request) {
+//        String token = request.getHeader("Authorization");
+//        return R.ok().data(token);
+//    }
 }
 

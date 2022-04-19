@@ -8,6 +8,7 @@ import com.example.comelymusic.generate.controller.requests.user.LoginRequest;
 import com.example.comelymusic.generate.controller.requests.user.UserCreateRequest;
 import com.example.comelymusic.generate.controller.responses.user.LoginResponse;
 import com.example.comelymusic.generate.entity.User;
+import com.example.comelymusic.generate.enums.Gender;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.mapper.UserMapper;
 import com.example.comelymusic.generate.service.UserService;
@@ -15,6 +16,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.management.relation.Role;
+import java.util.UUID;
 
 /**
  * <p>
@@ -27,6 +31,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+    private static final String DEFAULT_AVATAR_ID = "DEFAULT-AVATAR-ID";
+    private static final String DEFAULT_NICKNAME = "新用户";
+
     @Autowired
     UserMapper userMapper;
 
@@ -109,33 +116,83 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
     }
 
+    @Override
+    public Boolean judgeNewUser(LoginRequest request) {
+        return !checkUserNameExists(request.getUsername());
+    }
+
     /**
-     * 登录接口
+     * 存在账号就登录，不存在账号就注册新账号，昵称、头像等用缺省值
      *
-     * @param request 用户名和密码
-     * @return 登录成功返回用户基本信息和token（token有效期3天），失败返回null
+     * @param request 用户名密码
+     * @return 旧帐号或新账号信息（包括用户基本信息和token（token有效期3天）），失败返回null
      */
     @Override
-    public LoginResponse login(LoginRequest request) {
+    public LoginResponse loginOrRegister(LoginRequest request) {
+        if (checkUserNameExists(request.getUsername())) {
+            return login(request);
+        }
+        return register(request);
+    }
+
+    private LoginResponse register(LoginRequest request) {
+        User newUser = new User();
+        newUser.setUsername(request.getUsername());
+        newUser.setPassword(request.getPassword());
+        newUser.setGender(Gender.UNKNOWN.getGender());
+        newUser.setRole(0);
+        newUser.setNickname(DEFAULT_NICKNAME + UUID.randomUUID().toString().substring(0, 8));
+        userMapper.insert(newUser);
+
+        String key = LOGIN_TOKEN_KEY_PREFIX + request.getUsername();
+        String token = jwtUtils.createToken(request.getUsername());
+        LoginResponse response = user2LoginResponse(newUser, token, true);
+        redis.setObject(key, response, JwtUtils.LOGIN_EFFECTIVE_TIME);
+        return response;
+    }
+
+    private LoginResponse login(LoginRequest request) {
         String username = request.getUsername();
         String password = request.getPassword();
-        String key = LOGIN_TOKEN_KEY_PREFIX + username;
-        LoginResponse value = (LoginResponse) redis.getObject(key, LoginResponse.class);
-        if (value != null) {
-            redis.setObject(key, value, JwtUtils.LOGIN_EFFECTIVE_TIME);
-            return value;
-        } else {
-            if (checkUserNameExists(username)) {
-                User user = checkUsernameAndPassword(username, password);
-                if (user != null) {
-                    String token = jwtUtils.createToken(username);
-                    LoginResponse response = user2LoginResponse(user, token);
-                    redis.setObject(key, response, JwtUtils.LOGIN_EFFECTIVE_TIME);
-                    return response;
-                }
+        User user = checkUsernameAndPassword(username, password);
+        if (user != null) {
+            String key = LOGIN_TOKEN_KEY_PREFIX + username;
+            LoginResponse value = (LoginResponse) redis.getObject(key, LoginResponse.class);
+            if (value != null) {
+                // 刷新过期时间
+                value.setIsNewUser(false);
+                redis.setObject(key, value, JwtUtils.LOGIN_EFFECTIVE_TIME);
+                return value;
+            } else {
+                String token = jwtUtils.createToken(username);
+                LoginResponse response = user2LoginResponse(user, token, false);
+                redis.setObject(key, response, JwtUtils.LOGIN_EFFECTIVE_TIME);
+                return response;
             }
         }
         return null;
+    }
+
+
+    /**
+     * 退出登录，销毁token
+     */
+    @Override
+    public void logout(String username) {
+        String key = LOGIN_TOKEN_KEY_PREFIX + username;
+        LoginResponse value = (LoginResponse) redis.getObject(key, LoginResponse.class);
+        if (value != null) {
+            redis.del(key);
+        }
+    }
+
+    /**
+     * 用户是否登录
+     */
+    @Override
+    public boolean getLoginStatus(String username) {
+        String key = LOGIN_TOKEN_KEY_PREFIX + username;
+        return redis.get(key) != null;
     }
 
     /**
@@ -187,7 +244,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return newUser;
     }
 
-    private LoginResponse user2LoginResponse(User user, String token) {
+    private LoginResponse user2LoginResponse(User user, String token, boolean isNewUser) {
         LoginResponse response = new LoginResponse();
         response.setUsername(user.getUsername())
                 .setNickname(user.getNickname())
@@ -195,6 +252,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .setRole(user.getRole())
                 .setAvatarId(user.getAvatarId())
                 .setLoginToken(token);
+        response.setIsNewUser(isNewUser);
         return response;
     }
 }
