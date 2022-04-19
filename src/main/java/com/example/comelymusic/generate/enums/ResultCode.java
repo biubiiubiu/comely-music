@@ -22,6 +22,7 @@ public enum ResultCode {
 
     USERNAME_EXISTS(false, 30001, "用户名已存在!"),
     USER_NOT_EXIST(false, 30002, "用户不存在!"),
+    USER_LOGIN_FAILED(false, 30003, "用户名或密码不正确！"),
 
     FILE_NAME_ERROR(false, 40001, "获取文件名异常!"),
     FILE_GET_STREAM_ERROR(false, 40001, "获取文件InputStream异常!"),

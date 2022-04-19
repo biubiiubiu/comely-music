@@ -26,13 +26,16 @@ import java.util.Date;
 public class JwtUtils {
     private final String SECRET = "comely-music";
     private final String HEADER="Authorization";
-    private final int EXPIRATION = 86400;
+    /**
+     * token有效时长，三天免登录 24*60*60*3
+     */
+    public final static int LOGIN_EFFECTIVE_TIME = 259200;
 
     //创建token
     //传入userid
     public String createToken(String username) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, EXPIRATION);
+        calendar.add(Calendar.SECOND, LOGIN_EFFECTIVE_TIME);
         JwtBuilder builder = Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setSubject(username)

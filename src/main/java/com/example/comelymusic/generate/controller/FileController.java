@@ -1,6 +1,7 @@
 package com.example.comelymusic.generate.controller;
 
 
+import com.aliyuncs.http.HttpRequest;
 import com.example.comelymusic.generate.common.R;
 import com.example.comelymusic.generate.controller.requests.file.FileCommonRequest;
 import com.example.comelymusic.generate.controller.requests.file.FileUploadRequest;
@@ -10,6 +11,8 @@ import com.example.comelymusic.generate.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -53,6 +56,27 @@ public class FileController {
     public R getDownloadingInfo(@Validated @PathVariable("username") String username) {
         OssTokenInfo ossToken = fileService.getOssToken(username);
         return R.ok().data(ossToken);
+    }
+
+    /**
+     * 获取用户的oss-token
+     */
+    @GetMapping("/oss-token")
+    @ResponseBody
+    public R getDownloadingSts(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+
+        return R.ok().data(token);
+    }
+
+    /**
+     * 测试
+     */
+    @PostMapping("/test")
+    @ResponseBody
+    public R test(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        return R.ok().data(token);
     }
 }
 

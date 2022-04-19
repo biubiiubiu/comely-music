@@ -40,7 +40,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
      * 存储到redis的sts-token的key前缀，加上用户名就可以组成key
      */
     private final static String STS_TOKEN_KEY_PREFIX = "sts-token-";
-//    private final static String LOGIN_TOKEN_KEY_PREFIX = "login-token-";
 
     @Autowired
     FileMapper fileMapper;

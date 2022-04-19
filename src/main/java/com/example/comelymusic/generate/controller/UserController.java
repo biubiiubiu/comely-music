@@ -2,7 +2,9 @@ package com.example.comelymusic.generate.controller;
 
 
 import com.example.comelymusic.generate.common.R;
-import com.example.comelymusic.generate.controller.requests.UserCreateRequest;
+import com.example.comelymusic.generate.controller.requests.user.LoginRequest;
+import com.example.comelymusic.generate.controller.requests.user.UserCreateRequest;
+import com.example.comelymusic.generate.controller.responses.user.LoginResponse;
 import com.example.comelymusic.generate.entity.User;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.service.UserService;
@@ -70,6 +72,18 @@ public class UserController {
             return R.setResult(ResultCode.USER_NOT_EXIST);
         }
         return R.ok();
+    }
+
+    /**
+     * 用户登录
+     */
+    @PostMapping("/login")
+    public R login(@Validated @RequestBody LoginRequest loginRequest) {
+        LoginResponse response = userService.login(loginRequest);
+        if (response != null) {
+            return R.ok().data(response);
+        }
+        return R.setResult(ResultCode.USER_LOGIN_FAILED);
     }
 }
 

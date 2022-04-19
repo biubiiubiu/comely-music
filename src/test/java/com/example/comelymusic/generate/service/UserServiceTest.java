@@ -1,6 +1,6 @@
 package com.example.comelymusic.generate.service;
 
-import com.example.comelymusic.generate.controller.requests.UserCreateRequest;
+import com.example.comelymusic.generate.controller.requests.user.UserCreateRequest;
 import com.example.comelymusic.generate.enums.Gender;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;

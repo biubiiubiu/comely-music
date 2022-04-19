@@ -2,7 +2,11 @@ package com.example.comelymusic.generate.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.comelymusic.generate.common.ComelyMusicException;
-import com.example.comelymusic.generate.controller.requests.UserCreateRequest;
+import com.example.comelymusic.generate.common.utils.JwtUtils;
+import com.example.comelymusic.generate.common.utils.RedisUtils;
+import com.example.comelymusic.generate.controller.requests.user.LoginRequest;
+import com.example.comelymusic.generate.controller.requests.user.UserCreateRequest;
+import com.example.comelymusic.generate.controller.responses.user.LoginResponse;
 import com.example.comelymusic.generate.entity.User;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.mapper.UserMapper;
@@ -26,8 +30,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     UserMapper userMapper;
 
+    @Autowired
+    RedisUtils redis;
+
+    @Autowired
+    JwtUtils jwtUtils;
+
+    /**
+     * 存储到redis的sts-token的key前缀，加上用户名就可以组成key
+     */
+    private final static String LOGIN_TOKEN_KEY_PREFIX = "login-token-";
+
     /**
      * 创建新用户
+     *
      * @param userCreateRequest 创建约束，userCreateRequest字段不能缺失
      * @return 创建结果
      * @throws ComelyMusicException 用户已经存在的异常
@@ -45,6 +61,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 根据用户名删除单个用户
+     *
      * @param username 用户名
      * @return 删除结果
      * @throws ComelyMusicException 异常
@@ -58,6 +75,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 根据用户名查询单个用户
+     *
      * @param username 用户名
      * @return 查询结果
      * @throws ComelyMusicException 用户不存在异常
@@ -71,6 +89,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 修改用户信息
+     *
      * @param userCreateRequest 修改的约束，userCreateRequest字段不能缺失
      * @return 修改结果
      * @throws ComelyMusicException 用户不存在的异常
@@ -91,7 +110,47 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     /**
-     * 检查用户名已存在
+     * 登录接口
+     *
+     * @param request 用户名和密码
+     * @return 登录成功返回用户基本信息和token（token有效期3天），失败返回null
+     */
+    @Override
+    public LoginResponse login(LoginRequest request) {
+        String username = request.getUsername();
+        String password = request.getPassword();
+        String key = LOGIN_TOKEN_KEY_PREFIX + username;
+        LoginResponse value = (LoginResponse) redis.getObject(key, LoginResponse.class);
+        if (value != null) {
+            redis.setObject(key, value, JwtUtils.LOGIN_EFFECTIVE_TIME);
+            return value;
+        } else {
+            if (checkUserNameExists(username)) {
+                User user = checkUsernameAndPassword(username, password);
+                if (user != null) {
+                    String token = jwtUtils.createToken(username);
+                    LoginResponse response = user2LoginResponse(user, token);
+                    redis.setObject(key, response, JwtUtils.LOGIN_EFFECTIVE_TIME);
+                    return response;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 检查用户名密码，成功返回用户信息，失败返回null
+     */
+    private User checkUsernameAndPassword(String username, String password) {
+        User user = selectByUsername(username);
+        if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
+            return user;
+        }
+        return null;
+    }
+
+    /**
+     * 检查用户名是否存在
      */
     private boolean checkUserNameExists(String username) throws ComelyMusicException {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
@@ -126,5 +185,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         newUser.setGender(userCreateRequest.getGender());
         newUser.setRole(userCreateRequest.getRole());
         return newUser;
+    }
+
+    private LoginResponse user2LoginResponse(User user, String token) {
+        LoginResponse response = new LoginResponse();
+        response.setUsername(user.getUsername())
+                .setNickname(user.getNickname())
+                .setGender(user.getGender())
+                .setRole(user.getRole())
+                .setAvatarId(user.getAvatarId())
+                .setLoginToken(token);
+        return response;
     }
 }
