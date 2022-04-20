@@ -1,10 +1,9 @@
 package com.example.comelymusic.generate.service.impl;
 
-import com.aliyun.oss.*;
 import com.aliyuncs.auth.sts.AssumeRoleResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.comelymusic.generate.common.ComelyMusicException;
-import com.example.comelymusic.generate.common.config.OssConfig;
+import com.example.comelymusic.generate.common.config.OssTokenConfig;
 import com.example.comelymusic.generate.common.utils.RedisUtils;
 import com.example.comelymusic.generate.controller.requests.file.FileCommonRequest;
 import com.example.comelymusic.generate.controller.requests.file.FileUploadRequest;
@@ -44,8 +43,8 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
     @Autowired
     FileMapper fileMapper;
 
-    @Autowired
-    OSS ossClient;
+//    @Autowired
+//    OSS ossClient;
 
     @Autowired
     AssumeRoleResponse roleResponse;
@@ -130,7 +129,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
                     .setSecurityToken(securityToken)
                     .setExpiration(expiration);
             // oss-token最大过期时间是3600L
-            redisUtils.setObject(key, newOssToken, OssConfig.EFFECTIVE_TIME);
+            redisUtils.setObject(key, newOssToken, OssTokenConfig.EFFECTIVE_TIME);
             return newOssToken;
         }
     }

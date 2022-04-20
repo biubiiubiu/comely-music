@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
  * @since: 2022-04-12 22:10
  */
 @Configuration
-public class OssConfig {
+public class OssTokenConfig {
     @Value("${oss.token.accessKeyId}")
     private String accesskeyId;
 
