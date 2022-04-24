@@ -7,4 +7,5 @@ package com.example.comelymusic.generate.controller.requests.music;
  * @since: 2022-04-23 21:15
  */
 public class MusicCreateRequest {
+
 }

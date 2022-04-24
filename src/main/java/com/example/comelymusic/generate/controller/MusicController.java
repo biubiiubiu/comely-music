@@ -3,7 +3,10 @@ package com.example.comelymusic.generate.controller;
 
 import com.example.comelymusic.generate.common.R;
 import com.example.comelymusic.generate.controller.requests.music.MusicCreateRequest;
+import com.example.comelymusic.generate.controller.requests.music.MusicSelectRequest;
 import com.example.comelymusic.generate.controller.requests.user.UserCreateRequest;
+import com.example.comelymusic.generate.controller.responses.music.MusicSelectResponse;
+import com.example.comelymusic.generate.enums.PlayerModule;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.service.MusicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MusicController {
     @Autowired
     MusicService musicService;
+
     /**
      * 新增用户
      */
@@ -38,6 +42,15 @@ public class MusicController {
             return R.setResult(ResultCode.USERNAME_EXISTS);
         }
         return R.ok();
+    }
+
+    /**
+     * 根据播放模式查询
+     */
+    @PostMapping("/get-list")
+    public R getMusicListByModule(@Validated @RequestBody MusicSelectRequest musicSelectRequest){
+        MusicSelectResponse response = musicService.selectByModule(musicSelectRequest);
+        return R.ok().data(response);
     }
 }
 

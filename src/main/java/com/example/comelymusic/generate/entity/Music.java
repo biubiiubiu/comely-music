@@ -61,6 +61,10 @@ public class Music extends BaseEntity<Music> {
     @TableField("status")
     private String status;
 
+    @ApiModelProperty("歌曲适合的播放模式，RANDOM-随机，STUDY-学习模式等")
+    @TableField("player_module")
+    private String playerModule;
+
     public Music(){
         super();
     }
