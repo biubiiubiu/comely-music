@@ -7,6 +7,7 @@ import com.example.comelymusic.generate.common.utils.RedisUtils;
 import com.example.comelymusic.generate.controller.requests.user.LoginRequest;
 import com.example.comelymusic.generate.controller.requests.user.UserCreateRequest;
 import com.example.comelymusic.generate.controller.responses.user.LoginResponse;
+import com.example.comelymusic.generate.controller.responses.user.UserInfoResponse;
 import com.example.comelymusic.generate.entity.User;
 import com.example.comelymusic.generate.enums.Gender;
 import com.example.comelymusic.generate.enums.ResultCode;
@@ -88,10 +89,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * @throws ComelyMusicException 用户不存在异常
      */
     @Override
-    public User selectByUsername(String username) throws ComelyMusicException {
-        QueryWrapper<User> wrapper = new QueryWrapper<>();
-        wrapper.eq("username", username);
-        return userMapper.selectOne(wrapper);
+    public UserInfoResponse selectUserInfoByUsername(String username) throws ComelyMusicException {
+        User user = selectByUsername(username);
+        return user2UserInfoResponse(user);
     }
 
     /**
@@ -114,6 +114,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             wrapper.eq("username", username);
             return userMapper.update(newUser, wrapper);
         }
+    }
+
+    private User selectByUsername(String username) throws ComelyMusicException {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("username", username);
+        return userMapper.selectOne(wrapper);
     }
 
     @Override
@@ -253,6 +259,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .setAvatarId(user.getAvatarId())
                 .setLoginToken(token);
         response.setIsNewUser(isNewUser);
+        return response;
+    }
+
+    private UserInfoResponse user2UserInfoResponse(User user) {
+        if (user == null) {
+            return null;
+        }
+        UserInfoResponse response = new UserInfoResponse();
+        response.setUsername(user.getUsername())
+                .setNickname(user.getNickname())
+                .setGender(user.getGender())
+                .setRole(user.getRole())
+                .setAvatarId(user.getAvatarId());
         return response;
     }
 }

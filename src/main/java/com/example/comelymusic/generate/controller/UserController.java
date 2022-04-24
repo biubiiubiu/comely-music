@@ -5,6 +5,7 @@ import com.example.comelymusic.generate.common.R;
 import com.example.comelymusic.generate.controller.requests.user.LoginRequest;
 import com.example.comelymusic.generate.controller.requests.user.UserCreateRequest;
 import com.example.comelymusic.generate.controller.responses.user.LoginResponse;
+import com.example.comelymusic.generate.controller.responses.user.UserInfoResponse;
 import com.example.comelymusic.generate.entity.User;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.service.UserService;
@@ -72,6 +73,18 @@ public class UserController {
             return R.setResult(ResultCode.USER_NOT_EXIST);
         }
         return R.ok();
+    }
+
+    /**
+     * 查询用户
+     */
+    @GetMapping("/select/{username}")
+    public R select(@PathVariable("username") String username) {
+        UserInfoResponse response = userService.selectUserInfoByUsername(username);
+        if(response==null){
+            return R.setResult(ResultCode.USER_NOT_EXIST);
+        }
+        return R.ok().data(response);
     }
 
     /**

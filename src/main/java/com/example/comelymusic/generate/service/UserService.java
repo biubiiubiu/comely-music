@@ -4,6 +4,7 @@ import com.example.comelymusic.generate.common.ComelyMusicException;
 import com.example.comelymusic.generate.controller.requests.user.LoginRequest;
 import com.example.comelymusic.generate.controller.requests.user.UserCreateRequest;
 import com.example.comelymusic.generate.controller.responses.user.LoginResponse;
+import com.example.comelymusic.generate.controller.responses.user.UserInfoResponse;
 import com.example.comelymusic.generate.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -18,7 +19,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface UserService extends IService<User> {
     int create(UserCreateRequest userCreateRequest) throws ComelyMusicException;
     int deleteByUsername(String username) throws ComelyMusicException;
-    User selectByUsername(String username) throws ComelyMusicException;
+    UserInfoResponse selectUserInfoByUsername(String username) throws ComelyMusicException;
     int update(UserCreateRequest userCreateRequest) throws ComelyMusicException;
 
     Boolean judgeNewUser(LoginRequest request);
