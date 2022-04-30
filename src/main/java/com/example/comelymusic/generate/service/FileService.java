@@ -19,4 +19,6 @@ public interface FileService extends IService<FileEntity> {
     FileUploadResponse getUploadInfo(FileUploadRequest fileUploadRequest);
     Boolean saveUploadInfo(FileCommonRequest fileCommonRequest);
     OssTokenInfo getOssToken(String username);
+
+    String getIdByFilename(String filename);
 }

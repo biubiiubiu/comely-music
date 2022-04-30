@@ -13,6 +13,7 @@ import com.example.comelymusic.generate.mapper.ArtistMapper;
 import com.example.comelymusic.generate.mapper.FileMapper;
 import com.example.comelymusic.generate.mapper.MusicMapper;
 import com.example.comelymusic.generate.service.ArtistService;
+import com.example.comelymusic.generate.service.FileService;
 import com.example.comelymusic.generate.service.MusicService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +42,15 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
     private FileMapper fileMapper;
 
     @Autowired
+    private FileService fileService;
+
+    @Autowired
     private ArtistService artistService;
 
     private final static int DEFAULT_NUM = 10;
 
     /**
-     * 创建新music，单个
+     * 创建新music，单个，会根据输入的歌名查找到对应的封面、mp3、歌词文件id
      *
      * @param request 约束
      * @return 0失败 1成功
@@ -103,7 +107,8 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
 
     private Music request2Music(MusicCreateRequest request) {
         Music music = new Music();
-        music.setName(request.getName());
+        String name = request.getName();
+        music.setName(name);
         music.setDescription(request.getDescription() != null ? request.getDescription() : null);
         String artistId = null;
         if (request.getArtistName() != null) {
@@ -113,9 +118,26 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
             }
         }
         music.setArtistId(artistId);
-        music.setCoverId(request.getCoverId() != null ? request.getCoverId() : null);
-        music.setMp3Id(request.getMp3Id() != null ? request.getMp3Id() : null);
-        music.setLyricId(request.getLyricId() != null ? request.getLyricId() : null);
+
+        String coverId = request.getCoverId();
+        if (coverId == null) {
+            coverId = fileService.getIdByFilename(name + ".jpg");
+        }
+
+        String mp3Id = request.getMp3Id();
+        if (mp3Id == null) {
+            mp3Id = fileService.getIdByFilename(name + ".mp3");
+        }
+
+        String lyricId = request.getLyricId();
+        if (lyricId == null) {
+            lyricId = fileService.getIdByFilename(name + ".lrc");
+        }
+
+        music.setCoverId(coverId);
+        music.setMp3Id(mp3Id);
+        music.setLyricId(lyricId);
+
         String status = request.getStatus();
         if (MusicStatus.CLOSED.toString().equals(status) || MusicStatus.PUBLISHED.toString().equals(status)) {
             music.setStatus(status);

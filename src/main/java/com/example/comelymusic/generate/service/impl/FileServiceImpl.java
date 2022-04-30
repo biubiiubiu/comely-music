@@ -134,6 +134,17 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
         }
     }
 
+    @Override
+    public String getIdByFilename(String filename) {
+        QueryWrapper<FileEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("name", filename);
+        FileEntity entity = fileMapper.selectOne(wrapper);
+        if (entity != null) {
+            return entity.getId();
+        }
+        return null;
+    }
+
     // ===================================================================
 
     // 文件在OSS的存储位置
