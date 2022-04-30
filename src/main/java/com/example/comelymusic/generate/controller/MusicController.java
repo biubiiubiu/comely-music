@@ -2,15 +2,12 @@ package com.example.comelymusic.generate.controller;
 
 
 import com.example.comelymusic.generate.common.R;
-import com.example.comelymusic.generate.controller.requests.music.MusicCreateRequest;
-import com.example.comelymusic.generate.controller.requests.music.MusicSelectRequest;
-import com.example.comelymusic.generate.controller.requests.user.UserCreateRequest;
-import com.example.comelymusic.generate.controller.responses.music.MusicSelectResponse;
-import com.example.comelymusic.generate.enums.PlayerModule;
+import com.example.comelymusic.generate.controller.requests.MusicCreateRequest;
+import com.example.comelymusic.generate.controller.requests.MusicSelectRequest;
+import com.example.comelymusic.generate.controller.responses.MusicSelectResponse;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.service.MusicService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

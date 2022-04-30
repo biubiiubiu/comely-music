@@ -1,4 +1,4 @@
-package com.example.comelymusic.generate.controller.responses.file;
+package com.example.comelymusic.generate.controller.responses;
 
 import lombok.Data;
 

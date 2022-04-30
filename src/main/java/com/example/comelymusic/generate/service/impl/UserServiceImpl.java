@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.comelymusic.generate.common.ComelyMusicException;
 import com.example.comelymusic.generate.common.utils.JwtUtils;
 import com.example.comelymusic.generate.common.utils.RedisUtils;
-import com.example.comelymusic.generate.controller.requests.user.LoginRequest;
-import com.example.comelymusic.generate.controller.requests.user.UserCreateRequest;
-import com.example.comelymusic.generate.controller.responses.user.LoginResponse;
-import com.example.comelymusic.generate.controller.responses.user.UserInfoResponse;
+import com.example.comelymusic.generate.controller.requests.LoginRequest;
+import com.example.comelymusic.generate.controller.requests.UserCreateRequest;
+import com.example.comelymusic.generate.controller.responses.LoginResponse;
+import com.example.comelymusic.generate.controller.responses.UserInfoResponse;
 import com.example.comelymusic.generate.entity.User;
 import com.example.comelymusic.generate.enums.Gender;
 import com.example.comelymusic.generate.enums.ResultCode;
@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.management.relation.Role;
 import java.util.UUID;
 
 /**

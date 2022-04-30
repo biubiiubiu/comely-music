@@ -1,18 +1,15 @@
 package com.example.comelymusic.generate.controller;
 
 
-import com.aliyuncs.http.HttpRequest;
 import com.example.comelymusic.generate.common.R;
-import com.example.comelymusic.generate.controller.requests.file.FileCommonRequest;
-import com.example.comelymusic.generate.controller.requests.file.FileUploadRequest;
-import com.example.comelymusic.generate.controller.responses.file.FileUploadResponse;
-import com.example.comelymusic.generate.controller.responses.file.OssTokenInfo;
+import com.example.comelymusic.generate.controller.requests.FileCommonRequest;
+import com.example.comelymusic.generate.controller.requests.FileUploadRequest;
+import com.example.comelymusic.generate.controller.responses.FileUploadResponse;
+import com.example.comelymusic.generate.controller.responses.OssTokenInfo;
 import com.example.comelymusic.generate.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * <p>

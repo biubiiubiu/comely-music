@@ -1,5 +1,6 @@
 package com.example.comelymusic.generate.service;
 
+import com.example.comelymusic.generate.controller.requests.ArtistCreateRequest;
 import com.example.comelymusic.generate.entity.Artist;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ArtistService extends IService<Artist> {
 
+    int create(ArtistCreateRequest artistCreateRequest);
+
+    Artist selectByArtistName(String artistName);
 }

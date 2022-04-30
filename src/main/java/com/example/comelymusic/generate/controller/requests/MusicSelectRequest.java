@@ -1,4 +1,4 @@
-package com.example.comelymusic.generate.controller.requests.music;
+package com.example.comelymusic.generate.controller.requests;
 
 import com.example.comelymusic.generate.enums.PlayerModule;
 import lombok.Data;

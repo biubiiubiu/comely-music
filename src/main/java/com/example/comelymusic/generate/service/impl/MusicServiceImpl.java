@@ -1,18 +1,18 @@
 package com.example.comelymusic.generate.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.comelymusic.generate.controller.requests.music.MusicCreateRequest;
-import com.example.comelymusic.generate.controller.requests.music.MusicSelectRequest;
-import com.example.comelymusic.generate.controller.responses.music.MusicSelectResponse;
+import com.example.comelymusic.generate.controller.requests.MusicCreateRequest;
+import com.example.comelymusic.generate.controller.requests.MusicSelectRequest;
+import com.example.comelymusic.generate.controller.responses.MusicSelectResponse;
 import com.example.comelymusic.generate.entity.Artist;
 import com.example.comelymusic.generate.entity.FileEntity;
 import com.example.comelymusic.generate.entity.Music;
+import com.example.comelymusic.generate.enums.MusicStatus;
 import com.example.comelymusic.generate.enums.PlayerModule;
 import com.example.comelymusic.generate.mapper.ArtistMapper;
 import com.example.comelymusic.generate.mapper.FileMapper;
 import com.example.comelymusic.generate.mapper.MusicMapper;
+import com.example.comelymusic.generate.service.ArtistService;
 import com.example.comelymusic.generate.service.MusicService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>
@@ -40,10 +41,18 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
     @Autowired
     private FileMapper fileMapper;
 
-    @Override
-    public int create(MusicCreateRequest musicCreateRequest) {
+    @Autowired
+    private ArtistService artistService;
 
-        return 0;
+    /**
+     * 创建新music，单个
+     * @param request 约束
+     * @return 0失败 1成功
+     */
+    @Override
+    public int create(MusicCreateRequest request) {
+        Music music = request2Music(request);
+        return musicMapper.insert(music);
     }
 
     /**
@@ -84,5 +93,36 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
             responseList.add(info);
         }
         return responseList;
+    }
+
+
+    private Music request2Music(MusicCreateRequest request) {
+        Music music = new Music();
+        music.setName(request.getName());
+        music.setDescription(request.getDescription() != null ? request.getDescription() : null);
+        String artistId = null;
+        if (request.getArtistName() != null) {
+            Artist artist = artistService.selectByArtistName(request.getArtistName());
+            if (artist != null) {
+                artistId = artist.getId();
+            }
+        }
+        music.setArtistId(artistId);
+        music.setCoverId(request.getCoverId() != null ? request.getCoverId() : null);
+        music.setMp3Id(request.getMp3Id() != null ? request.getMp3Id() : null);
+        music.setLyricId(request.getLyricId() != null ? request.getLyricId() : null);
+        String status = request.getStatus();
+        if (MusicStatus.CLOSED.toString().equals(status) || MusicStatus.PUBLISHED.toString().equals(status)) {
+            music.setStatus(status);
+        } else {
+            music.setStatus(MusicStatus.PUBLISHED.toString());
+        }
+        String playerModule = request.getPlayerModule();
+        if (PlayerModule.RANDOM.toString().equals(playerModule) || PlayerModule.STUDY.toString().equals(playerModule)) {
+            music.setPlayerModule(playerModule);
+        } else {
+            music.setPlayerModule(PlayerModule.RANDOM.toString());
+        }
+        return music;
     }
 }

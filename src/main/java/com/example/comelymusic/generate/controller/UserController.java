@@ -2,10 +2,10 @@ package com.example.comelymusic.generate.controller;
 
 
 import com.example.comelymusic.generate.common.R;
-import com.example.comelymusic.generate.controller.requests.user.LoginRequest;
-import com.example.comelymusic.generate.controller.requests.user.UserCreateRequest;
-import com.example.comelymusic.generate.controller.responses.user.LoginResponse;
-import com.example.comelymusic.generate.controller.responses.user.UserInfoResponse;
+import com.example.comelymusic.generate.controller.requests.LoginRequest;
+import com.example.comelymusic.generate.controller.requests.UserCreateRequest;
+import com.example.comelymusic.generate.controller.responses.LoginResponse;
+import com.example.comelymusic.generate.controller.responses.UserInfoResponse;
 import com.example.comelymusic.generate.entity.User;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.service.UserService;

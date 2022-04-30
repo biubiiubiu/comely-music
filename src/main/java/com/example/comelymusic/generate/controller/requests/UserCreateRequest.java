@@ -1,4 +1,4 @@
-package com.example.comelymusic.generate.controller.requests.user;
+package com.example.comelymusic.generate.controller.requests;
 
 import com.example.comelymusic.generate.enums.Gender;
 import lombok.Data;

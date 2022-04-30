@@ -1,8 +1,7 @@
 package com.example.comelymusic.generate.common.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.example.comelymusic.generate.controller.requests.file.FileCommonRequest;
-import com.example.comelymusic.generate.controller.requests.file.FileUploadRequest;
+import com.example.comelymusic.generate.controller.requests.FileCommonRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

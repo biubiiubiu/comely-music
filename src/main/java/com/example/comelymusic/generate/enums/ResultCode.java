@@ -26,7 +26,11 @@ public enum ResultCode {
 
     FILE_NAME_ERROR(false, 40001, "获取文件名异常!"),
     FILE_GET_STREAM_ERROR(false, 40001, "获取文件InputStream异常!"),
-    FILE_TYPE_NOT_SUPPORTED_ERROR(false, 40001, "不支持的文件类型!");
+    FILE_TYPE_NOT_SUPPORTED_ERROR(false, 40001, "不支持的文件类型!"),
+
+    ARTIST_CREATE_ERROR(false, 50001, "创建音乐人失败!"),
+
+    MUSIC_CREATE_ERROR(false, 60001, "创建音乐失败!");
 
 
     // 响应是否成功

@@ -1,9 +1,9 @@
 package com.example.comelymusic.generate.service;
 
-import com.example.comelymusic.generate.controller.requests.file.FileCommonRequest;
-import com.example.comelymusic.generate.controller.requests.file.FileUploadRequest;
-import com.example.comelymusic.generate.controller.responses.file.FileUploadResponse;
-import com.example.comelymusic.generate.controller.responses.file.OssTokenInfo;
+import com.example.comelymusic.generate.controller.requests.FileCommonRequest;
+import com.example.comelymusic.generate.controller.requests.FileUploadRequest;
+import com.example.comelymusic.generate.controller.responses.FileUploadResponse;
+import com.example.comelymusic.generate.controller.responses.OssTokenInfo;
 import com.example.comelymusic.generate.entity.FileEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 
