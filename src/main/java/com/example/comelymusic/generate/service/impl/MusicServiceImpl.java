@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * <p>
@@ -44,8 +43,11 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
     @Autowired
     private ArtistService artistService;
 
+    private final static int DEFAULT_NUM = 10;
+
     /**
      * 创建新music，单个
+     *
      * @param request 约束
      * @return 0失败 1成功
      */
@@ -60,10 +62,13 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
      */
     @Override
     public MusicSelectResponse selectByModule(MusicSelectRequest request) {
-        int num = request.getNum();
+        int num = request.getNum() == null ? DEFAULT_NUM : request.getNum();
         MusicSelectResponse response = new MusicSelectResponse();
         List<MusicSelectResponse.MusicInfo> responseList = new ArrayList<>();
         PlayerModule module = request.getModule();
+        if (PlayerModule.RANDOM != module && PlayerModule.STUDY != module) {
+            module = PlayerModule.RANDOM;
+        }
         QueryWrapper<Music> wrapper = new QueryWrapper<>();
         wrapper.eq("player_module", module);
         List<Music> musicList = musicMapper.selectList(wrapper);
