@@ -32,18 +32,23 @@ public class OssTokenConfig {
 
 
     @Bean
-    AssumeRoleResponse getRoleResponse() throws ClientException {
-        DefaultProfile.addEndpoint("cn-huhehaote", "Sts", "sts.cn-huhehaote.aliyuncs.com");
-        // 构造default profile。
-        IClientProfile profile = DefaultProfile.getProfile("cn-huhehaote", accesskeyId, accesskeySecret);
-        // 构造client。
-        DefaultAcsClient client = new DefaultAcsClient(profile);
-        final AssumeRoleRequest request = new AssumeRoleRequest();
-        // 适用于Java SDK 3.12.0及以上版本。
-        request.setSysMethod(MethodType.POST);
-        request.setRoleArn(roleArn);
-        request.setRoleSessionName("ztian");
-        request.setDurationSeconds(EFFECTIVE_TIME); // 设置临时访问凭证的有效时间为1小时(最多一小时)
-        return client.getAcsResponse(request);
+    AssumeRoleResponse getRoleResponse() {
+        try {
+            DefaultProfile.addEndpoint("cn-huhehaote", "Sts", "sts.cn-huhehaote.aliyuncs.com");
+            // 构造default profile。
+            IClientProfile profile = DefaultProfile.getProfile("cn-huhehaote", accesskeyId, accesskeySecret);
+            // 构造client。
+            DefaultAcsClient client = new DefaultAcsClient(profile);
+            final AssumeRoleRequest request = new AssumeRoleRequest();
+            // 适用于Java SDK 3.12.0及以上版本。
+            request.setSysMethod(MethodType.POST);
+            request.setRoleArn(roleArn);
+            request.setRoleSessionName("ztian");
+            request.setDurationSeconds(EFFECTIVE_TIME); // 设置临时访问凭证的有效时间为1小时(最多一小时)
+            return client.getAcsResponse(request);
+        } catch (ClientException cle) {
+            cle.printStackTrace();
+        }
+        return null;
     }
 }

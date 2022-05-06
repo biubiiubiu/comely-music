@@ -237,15 +237,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 修改用户信息
      */
-    private User oldUser2NewUser(User oldUser, UserCreateRequest userCreateRequest) {
+    private User oldUser2NewUser(User oldUser, UserCreateRequest request) {
         User newUser = new User();
         newUser.setId(oldUser.getId());
-        newUser.setUsername(userCreateRequest.getUsername());
-        // todo 让用户输入旧密码，之后才能修改新密码，或者直接加一个修改密码的接口
-        newUser.setPassword(userCreateRequest.getPassword());
-        newUser.setNickname(userCreateRequest.getNickname());
-        newUser.setGender(userCreateRequest.getGender());
-        newUser.setRole(userCreateRequest.getRole());
+        if (request.getUsername() != null) {
+            newUser.setUsername(request.getUsername());
+        }
+        if (request.getPassword() != null) {
+            newUser.setPassword(request.getPassword());
+        }
+        if (request.getNickname() != null && request.getNickname().length() > 0) {
+            newUser.setNickname(request.getNickname());
+        }
+        if (request.getGender() != null) {
+            newUser.setGender(request.getGender());
+        }
+        if (request.getRole() != null) {
+            newUser.setRole(request.getRole());
+        }
         return newUser;
     }
 
