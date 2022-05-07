@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.fill.Column;
 import com.baomidou.mybatisplus.generator.fill.Property;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Collections;
 
@@ -27,7 +28,8 @@ public class MybatisPlusGeneratorUtil {
         /*数据库配置*/
         DataSourceConfig dataSourceConfig =
                 new DataSourceConfig
-                        .Builder("jdbc:mysql://39.99.112.72:3306/comely-music?characterEncoding=UTF8&userSSL=false", "root", "123456")
+                        .Builder("jdbc:mysql://39.99.112.72:3306/comely-music?characterEncoding=UTF8&userSSL=false",
+                        "root", "密码")
                         .dbQuery(new MySqlQuery())
                         .build();
 
@@ -85,7 +87,7 @@ public class MybatisPlusGeneratorUtil {
                 .disableSqlFilter()
 //                .likeTable(new LikeTable("USER"))
                 // 这里是需要生成的对应表名
-                .addInclude("fans_artist")
+                .addInclude("entity_tag")
 //                .addTablePrefix("t_", "c_")
 //                .addFieldSuffix("_flag")
                 /*   .entityBuilder()
@@ -106,13 +108,13 @@ public class MybatisPlusGeneratorUtil {
                 .versionPropertyName("version")
                 .logicDeleteColumnName("deleted")
                 .logicDeletePropertyName("deleted")
-                .naming(NamingStrategy.no_change)
+                .naming(NamingStrategy.underline_to_camel)
                 .columnNaming(NamingStrategy.underline_to_camel)
 //                .addSuperEntityColumns("id", "created_by", "created_time", "updated_by", "updated_time")
 //                .addIgnoreColumns("age")
                 .addTableFills(new Column("create_time", FieldFill.INSERT))
                 .addTableFills(new Property("update_time", FieldFill.INSERT_UPDATE))
-                .idType(IdType.AUTO)
+                .idType(IdType.ASSIGN_UUID)
                 .formatFileName("%s")
                 .build();
 
@@ -127,7 +129,7 @@ public class MybatisPlusGeneratorUtil {
 //                .superServiceClass(BaseService.class)
 //                .superServiceImplClass(BaseServiceImpl.class)
                 .formatServiceFileName("%sService")
-                .formatServiceImplFileName("%sServiceImp")
+                .formatServiceImplFileName("%sServiceImpl")
                 .build();
 
         strategyConfig
@@ -137,7 +139,7 @@ public class MybatisPlusGeneratorUtil {
                 .enableBaseResultMap()
                 .enableBaseColumnList()
 //                .cache(MyMapperCache.class)
-                .formatMapperFileName("%sDao")
+                .formatMapperFileName("%sMapper")
                 .formatXmlFileName("%sXml")
                 .build();
 
