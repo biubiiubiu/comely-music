@@ -9,11 +9,7 @@ import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.service.MusicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -47,6 +43,15 @@ public class MusicController {
     @PostMapping("/get-list")
     public R getMusicListByModule(@Validated @RequestBody MusicSelectRequest musicSelectRequest){
         MusicSelectResponse response = musicService.selectByModule(musicSelectRequest);
+        return R.ok().data(response);
+    }
+
+    /**
+     * 根据歌名模糊搜索
+     */
+    @GetMapping("/fuzzy-search-name/{name}")
+    public R fuzzySearchMusicByName(@PathVariable("name") String name){
+        MusicSelectResponse response =  musicService.fuzzySearch(name);
         return R.ok().data(response);
     }
 }

@@ -19,4 +19,6 @@ public interface MusicService extends IService<Music> {
     int create(MusicCreateRequest musicCreateRequest);
 
     MusicSelectResponse selectByModule(MusicSelectRequest musicSelectRequest);
+
+    MusicSelectResponse fuzzySearch(String name);
 }

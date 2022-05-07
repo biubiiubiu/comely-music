@@ -81,6 +81,23 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
         return response;
     }
 
+    /**
+     * 根据歌名模糊搜索歌曲
+     */
+    @Override
+    public MusicSelectResponse fuzzySearch(String name) {
+        QueryWrapper<Music> wrapper = new QueryWrapper<>();
+        wrapper.like("name", name);
+        List<Music> musicList = musicMapper.selectList(wrapper);
+        List<MusicSelectResponse.MusicInfo> musicInfos = music2MusicResponse(musicList, musicList.size());
+        MusicSelectResponse response = new MusicSelectResponse();
+        response.setMusicList(musicInfos);
+        return response;
+    }
+
+    /**
+     * List<Music>经过查询转换成 [最多包含数量num] 的List<MusicSelectResponse.MusicInfo>
+     */
     private List<MusicSelectResponse.MusicInfo> music2MusicResponse(List<Music> musicList, int num) {
         if (musicList == null) {
             return null;
