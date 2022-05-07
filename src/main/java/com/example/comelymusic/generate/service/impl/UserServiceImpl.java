@@ -115,7 +115,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
     }
 
-    private User selectByUsername(String username) throws ComelyMusicException {
+    @Override
+    public User selectByUsername(String username) throws ComelyMusicException {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("username", username);
         return userMapper.selectOne(wrapper);

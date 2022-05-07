@@ -3,6 +3,7 @@ package com.example.comelymusic.generate.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.comelymusic.generate.controller.requests.MusicCreateRequest;
 import com.example.comelymusic.generate.controller.requests.MusicSelectRequest;
+import com.example.comelymusic.generate.controller.requests.PlaylistMusicAddRequest;
 import com.example.comelymusic.generate.controller.responses.MusicSelectResponse;
 import com.example.comelymusic.generate.entity.Artist;
 import com.example.comelymusic.generate.entity.FileEntity;
@@ -16,6 +17,7 @@ import com.example.comelymusic.generate.service.ArtistService;
 import com.example.comelymusic.generate.service.FileService;
 import com.example.comelymusic.generate.service.MusicService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,7 @@ import java.util.List;
  * @since 2022-04-08
  */
 @Service
+@Slf4j
 public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements MusicService {
     @Autowired
     private MusicMapper musicMapper;
@@ -93,6 +96,24 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
         MusicSelectResponse response = new MusicSelectResponse();
         response.setMusicList(musicInfos);
         return response;
+    }
+
+    @Override
+    public List<Music> getMusicListByMusicAddInfoList(List<PlaylistMusicAddRequest.MusicAddInfo> musicAddInfoList) {
+        List<Music> result = new ArrayList<>();
+        for (PlaylistMusicAddRequest.MusicAddInfo info : musicAddInfoList) {
+            Artist artist = artistService.selectByArtistName(info.getArtistName());
+            if (artist != null) {
+                QueryWrapper<Music> wrapper = new QueryWrapper<>();
+                wrapper.eq("name", info.getTitle());
+                wrapper.eq("artist_id", artist.getId());
+                Music music = musicMapper.selectOne(wrapper);
+                result.add(music);
+            } else {
+                log.error("找不到音乐：" + info.getTitle() + "，歌手：" + info.getArtistName());
+            }
+        }
+        return result;
     }
 
     /**

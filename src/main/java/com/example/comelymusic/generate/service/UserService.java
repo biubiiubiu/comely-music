@@ -26,4 +26,6 @@ public interface UserService extends IService<User> {
     LoginResponse loginOrRegister(LoginRequest loginRequest);
     void logout(String username);
     boolean getLoginStatus(String username);
+
+    User selectByUsername(String username);
 }

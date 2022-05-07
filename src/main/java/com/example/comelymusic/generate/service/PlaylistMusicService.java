@@ -1,5 +1,6 @@
 package com.example.comelymusic.generate.service;
 
+import com.example.comelymusic.generate.controller.requests.PlaylistMusicAddRequest;
 import com.example.comelymusic.generate.entity.PlaylistMusic;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface PlaylistMusicService extends IService<PlaylistMusic> {
 
+    int addMusic2Playlist(PlaylistMusicAddRequest request);
 }

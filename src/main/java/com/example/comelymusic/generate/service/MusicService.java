@@ -2,9 +2,12 @@ package com.example.comelymusic.generate.service;
 
 import com.example.comelymusic.generate.controller.requests.MusicCreateRequest;
 import com.example.comelymusic.generate.controller.requests.MusicSelectRequest;
+import com.example.comelymusic.generate.controller.requests.PlaylistMusicAddRequest;
 import com.example.comelymusic.generate.controller.responses.MusicSelectResponse;
 import com.example.comelymusic.generate.entity.Music;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -21,4 +24,6 @@ public interface MusicService extends IService<Music> {
     MusicSelectResponse selectByModule(MusicSelectRequest musicSelectRequest);
 
     MusicSelectResponse fuzzySearch(String name);
+
+    List<Music> getMusicListByMusicAddInfoList(List<PlaylistMusicAddRequest.MusicAddInfo> musicAddInfoList);
 }

@@ -40,4 +40,13 @@ public class PlaylistMusic extends Model<PlaylistMusic> {
         return null;
     }
 
+    public PlaylistMusic setPlaylistId(String playlistId) {
+        this.playlistId = playlistId;
+        return this;
+    }
+
+    public PlaylistMusic setMusic_id(String music_id) {
+        this.music_id = music_id;
+        return this;
+    }
 }
