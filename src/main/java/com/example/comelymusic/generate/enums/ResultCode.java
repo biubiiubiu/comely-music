@@ -31,6 +31,7 @@ public enum ResultCode {
     ARTIST_CREATE_ERROR(false, 50001, "创建音乐人失败!"),
 
     MUSIC_CREATE_ERROR(false, 60001, "创建音乐失败!"),
+    MUSIC_EXISTS(true, 60002, "音乐已存在!"),
 
     PLAYLIST_CREATE_ERROR(false, 70001, "创建音乐失败!"),
     PLAYLIST_DELETE_ERROR(false, 70002, "删除音乐失败!"),

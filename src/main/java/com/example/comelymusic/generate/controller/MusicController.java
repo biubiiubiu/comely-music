@@ -26,13 +26,15 @@ public class MusicController {
     MusicService musicService;
 
     /**
-     * 新增用户
+     * 新增音乐
      */
     @PostMapping("/create")
     public R create(@Validated @RequestBody MusicCreateRequest musicCreateRequest) {
         int result = musicService.create(musicCreateRequest);
         if (result == 0) {
-            return R.setResult(ResultCode.USERNAME_EXISTS);
+            return R.setResult(ResultCode.MUSIC_CREATE_ERROR);
+        } else if (result == -1) {
+            return R.setResult(ResultCode.MUSIC_EXISTS);
         }
         return R.ok();
     }
@@ -41,7 +43,7 @@ public class MusicController {
      * 根据播放模式查询
      */
     @PostMapping("/get-list")
-    public R getMusicListByModule(@Validated @RequestBody MusicSelectRequest musicSelectRequest){
+    public R getMusicListByModule(@Validated @RequestBody MusicSelectRequest musicSelectRequest) {
         MusicSelectResponse response = musicService.selectByModule(musicSelectRequest);
         return R.ok().data(response);
     }
@@ -50,8 +52,8 @@ public class MusicController {
      * 根据歌名模糊搜索
      */
     @GetMapping("/fuzzy-search-name/{name}")
-    public R fuzzySearchMusicByName(@PathVariable("name") String name){
-        MusicSelectResponse response =  musicService.fuzzySearch(name);
+    public R fuzzySearchMusicByName(@PathVariable("name") String name) {
+        MusicSelectResponse response = musicService.fuzzySearch(name);
         return R.ok().data(response);
     }
 }
