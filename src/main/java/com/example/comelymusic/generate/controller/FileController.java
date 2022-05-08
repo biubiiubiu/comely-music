@@ -36,7 +36,7 @@ public class FileController {
     }
 
     /**
-     * 上传完成，刷新文件状态，并返回新的文件信息
+     * 上传完成，刷新文件信息到数据库
      */
     @PostMapping("/upload-success")
     @ResponseBody

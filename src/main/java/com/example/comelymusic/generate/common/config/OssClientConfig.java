@@ -8,13 +8,13 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * description: OSS服务连接配置，在后端上传下载文件
+ * 注意：此类已弃用，后端不再传输文件
  *
  * @author: zhangtian
  * @since: 2022-04-10 22:50
  */
 @Configuration
 public class OssClientConfig {
-    // todo 这个类准备弃用，后端不再传输文件
 
     @Value("${oss.accessKeyId}")
     private String accessKeyId;

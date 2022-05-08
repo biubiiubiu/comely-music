@@ -4,12 +4,15 @@ package com.example.comelymusic.generate.controller;
 import com.example.comelymusic.generate.common.R;
 import com.example.comelymusic.generate.controller.requests.MusicCreateRequest;
 import com.example.comelymusic.generate.controller.requests.MusicSelectRequest;
+import com.example.comelymusic.generate.controller.responses.MusicBatchCreateResponse;
 import com.example.comelymusic.generate.controller.responses.MusicSelectResponse;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.service.MusicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -37,6 +40,15 @@ public class MusicController {
             return R.setResult(ResultCode.MUSIC_EXISTS);
         }
         return R.ok();
+    }
+
+    /**
+     * 批量新增音乐
+     */
+    @PostMapping("/batch-create")
+    public R batchCreate(@Validated @RequestBody List<MusicCreateRequest> requestList) {
+        MusicBatchCreateResponse response = musicService.batchCreate(requestList);
+        return R.ok().data(response);
     }
 
     /**

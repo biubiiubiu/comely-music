@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.comelymusic.generate.controller.requests.MusicCreateRequest;
 import com.example.comelymusic.generate.controller.requests.MusicSelectRequest;
 import com.example.comelymusic.generate.controller.requests.PlaylistMusicAddRequest;
+import com.example.comelymusic.generate.controller.responses.MusicBatchCreateResponse;
 import com.example.comelymusic.generate.controller.responses.MusicSelectResponse;
 import com.example.comelymusic.generate.entity.Artist;
 import com.example.comelymusic.generate.entity.FileEntity;
@@ -51,6 +52,7 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
     private ArtistService artistService;
 
     private final static int DEFAULT_NUM = 10;
+    private final static String DEFAULT_DESCRIPTION = "暂无描述";
 
     /**
      * 创建新music，单个，会根据输入的歌名查找到对应的封面、mp3、歌词文件id
@@ -123,6 +125,27 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
         return result;
     }
 
+    @Override
+    public MusicBatchCreateResponse batchCreate(List<MusicCreateRequest> requestList) {
+        MusicBatchCreateResponse response = new MusicBatchCreateResponse();
+        List<String> successList = new ArrayList<>();
+        List<String> failedList = new ArrayList<>();
+        int successTotal = 0, failedTotal = 0;
+        for (MusicCreateRequest request : requestList) {
+            int i = create(request);
+            if (i == 1) {
+                successTotal += 1;
+                successList.add(request.getName());
+            } else {
+                failedList.add(request.getName());
+                failedTotal += 1;
+            }
+        }
+        response.setSuccessNum(successTotal).setFailedNum(failedTotal)
+                .setSuccessMusicList(successList).setFailedMusicList(failedList);
+        return response;
+    }
+
     /**
      * List<Music>经过查询转换成 [最多包含数量num] 的List<MusicSelectResponse.MusicInfo>
      */
@@ -154,7 +177,7 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
         Music music = new Music();
         String name = request.getName();
         music.setName(name);
-        music.setDescription(request.getDescription() != null ? request.getDescription() : null);
+        music.setDescription(request.getDescription() != null ? request.getDescription() : DEFAULT_DESCRIPTION);
         String artistId = null;
         if (request.getArtistName() != null) {
             Artist artist = artistService.selectByArtistName(request.getArtistName());
