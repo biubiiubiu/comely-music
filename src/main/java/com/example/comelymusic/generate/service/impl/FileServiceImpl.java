@@ -85,13 +85,17 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
         Map<String, FileCommonRequest.CommonInfo> fileKeyInfoMap = request.getFileKeyInfoMap();
         int num = 0;
         int total = fileKeyInfoMap.size();
-        for (String key : fileKeyInfoMap.keySet()) {
+
+        Iterator<Map.Entry<String, FileCommonRequest.CommonInfo>> it = fileKeyInfoMap.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry<String, FileCommonRequest.CommonInfo> entry = it.next();
+            String key = entry.getKey();
             // 防止插入重复的file_key导致SQLEXCEPTION
             QueryWrapper<FileEntity> wrapper = new QueryWrapper<>();
             wrapper.eq("file_key", key);
             FileEntity entity = fileMapper.selectOne(wrapper);
             if (entity != null) {
-                fileKeyInfoMap.remove(key);
+                it.remove();//使用迭代器的remove()方法删除元素
                 total--;
             }
         }

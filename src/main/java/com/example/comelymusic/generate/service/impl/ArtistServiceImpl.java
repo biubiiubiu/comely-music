@@ -34,7 +34,13 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
     @Override
     public int create(ArtistCreateRequest request) {
         Artist artist = request2Artist(request);
-        return mapper.insert(artist);
+        QueryWrapper<Artist> wrapper = new QueryWrapper<>();
+        wrapper.eq("name", request.getArtistName());
+        Artist artist1 = mapper.selectOne(wrapper);
+        if (artist1 == null) {
+            return mapper.insert(artist);
+        }
+        return 0;
     }
 
     /**

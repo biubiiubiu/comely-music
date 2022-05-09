@@ -62,12 +62,17 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
      */
     @Override
     public int create(MusicCreateRequest request) {
-        // 防止重复音乐名，手动使music name成为唯一标识
+        // 防止重复（音乐名+歌手），这里 (name,artist_id)是联合索引
         QueryWrapper<Music> wrapper = new QueryWrapper<>();
         wrapper.eq("name", request.getName());
-        Music existenceMusic = musicMapper.selectOne(wrapper);
-        if (existenceMusic != null) {
-            return -1;
+
+        Artist artist = artistService.selectByArtistName(request.getArtistName());
+        if (artist != null) {
+            wrapper.eq("artist_id", artist.getId());
+            Music existenceMusic = musicMapper.selectOne(wrapper);
+            if (existenceMusic != null) {
+                return -1;
+            }
         }
         Music music = request2Music(request);
         return musicMapper.insert(music);
