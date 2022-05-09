@@ -108,8 +108,9 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         User user = userService.selectByUsername(request.getUsername());
         if (user != null) {
             wrapper.eq("created_by_user_id", user.getId());
+            return playlistMapper.selectOne(wrapper);
         }
-        return playlistMapper.selectOne(wrapper);
+        return null;
     }
 
     /**

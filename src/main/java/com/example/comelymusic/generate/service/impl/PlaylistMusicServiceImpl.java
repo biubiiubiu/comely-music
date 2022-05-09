@@ -37,8 +37,6 @@ public class PlaylistMusicServiceImpl extends ServiceImpl<PlaylistMusicMapper, P
 
     /**
      * 添加歌曲到歌单
-     * @param request
-     * @return
      */
     @Override
     public int addMusic2Playlist(PlaylistMusicAddRequest request) {
@@ -47,14 +45,17 @@ public class PlaylistMusicServiceImpl extends ServiceImpl<PlaylistMusicMapper, P
         Playlist playlist = playlistService.selectPlaylist(new PlaylistSelectRequest()
                 .setUsername(request.getUsername()).setPlaylistName(request.getPlaylistName()));
 
-        String playlistId = playlist.getId();
+        if (playlist != null) {
+            String playlistId = playlist.getId();
 
-        int total = 0;
-        for (Music music : musicList) {
-            total += mapper.insert(new PlaylistMusic().setMusic_id(music.getId()).setPlaylistId(playlistId));
+            int total = 0;
+            for (Music music : musicList) {
+                total += mapper.insert(new PlaylistMusic().setMusic_id(music.getId()).setPlaylistId(playlistId));
+            }
+            // 修改playlist歌曲数量
+            playlistService.addMusicNum(playlistId, playlist.getMusicNum() + total);
+            return total;
         }
-        // 修改playlist歌曲数量
-        playlistService.addMusicNum(playlistId, playlist.getMusicNum() + total);
-        return total;
+        return 0;
     }
 }

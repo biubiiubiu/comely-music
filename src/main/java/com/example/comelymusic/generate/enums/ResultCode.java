@@ -35,7 +35,9 @@ public enum ResultCode {
 
     PLAYLIST_CREATE_ERROR(false, 70001, "创建音乐失败!"),
     PLAYLIST_DELETE_ERROR(false, 70002, "删除音乐失败!"),
-    PLAYLIST_ADD_MUSIC_ERROR(false, 70003, "添加音乐到歌单失败!");
+    PLAYLIST_ADD_MUSIC_ERROR(false, 70003, "添加音乐到歌单失败!"),
+
+    ENTITY_TAG_ADD_ERROR(false, 80003, "添加标签失败!");
 
 
     // 响应是否成功

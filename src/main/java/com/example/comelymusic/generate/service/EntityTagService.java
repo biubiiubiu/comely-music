@@ -1,5 +1,6 @@
 package com.example.comelymusic.generate.service;
 
+import com.example.comelymusic.generate.controller.requests.EntityTagCreateRequest;
 import com.example.comelymusic.generate.entity.EntityTag;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface EntityTagService extends IService<EntityTag> {
 
+    int create(EntityTagCreateRequest request);
 }

@@ -152,6 +152,19 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
     }
 
     /**
+     * 根据歌名查询music，由于有歌名重复，因此返回list
+     *
+     * @param name 歌名
+     * @return list(music)
+     */
+    @Override
+    public List<Music> selectByName(String name) {
+        QueryWrapper<Music> wrapper = new QueryWrapper<>();
+        wrapper.eq("name", name);
+        return musicMapper.selectList(wrapper);
+    }
+
+    /**
      * List<Music>经过查询转换成 [最多包含数量num] 的List<MusicSelectResponse.MusicInfo>
      */
     private List<MusicSelectResponse.MusicInfo> music2MusicResponse(List<Music> musicList, int num) {

@@ -29,4 +29,6 @@ public interface MusicService extends IService<Music> {
     List<Music> getMusicListByMusicAddInfoList(List<PlaylistMusicAddRequest.MusicAddInfo> musicAddInfoList);
 
     MusicBatchCreateResponse batchCreate(List<MusicCreateRequest> requestList);
+
+    List<Music> selectByName(String name);
 }

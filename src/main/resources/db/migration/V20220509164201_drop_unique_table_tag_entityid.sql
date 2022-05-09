@@ -1,0 +1,1 @@
+ALTER TABLE entity_tag DROP INDEX `tag_entity_id`;

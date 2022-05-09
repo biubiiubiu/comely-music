@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * description: 删除歌单约束
+ * description: 删除歌单约束,都不能为null
  *
  * @author: zhangtian
  * @since: 2022-05-07 11:25

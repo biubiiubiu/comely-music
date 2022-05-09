@@ -6,7 +6,7 @@ package com.example.comelymusic.generate.enums;
  * @author: zhangtian
  * @since: 2022-05-07 19:17
  */
-public enum TagEntityType {
+public enum TagType {
     MUSIC,
     PLAYLIST,
     ARTIST

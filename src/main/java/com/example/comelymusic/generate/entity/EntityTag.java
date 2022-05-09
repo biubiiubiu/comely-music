@@ -4,15 +4,15 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import com.example.comelymusic.generate.entity.common.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -27,7 +27,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("entity_tag")
 @ApiModel(value = "EntityTag对象", description = "文件表")
-public class EntityTag extends Model<EntityTag> {
+public class EntityTag extends BaseEntity<EntityTag> {
 
     @ApiModelProperty("标签ID")
       @TableId(value = "id", type = IdType.ASSIGN_UUID)
@@ -44,14 +44,6 @@ public class EntityTag extends Model<EntityTag> {
     @ApiModelProperty("实体类型，MUSIC PLAYLIST ARTIST")
     @TableField("entity_type")
     private String entityType;
-
-    @ApiModelProperty("创建时间")
-    @TableField("created_time")
-    private LocalDateTime createdTime;
-
-    @ApiModelProperty("更新时间")
-    @TableField("updated_time")
-    private LocalDateTime updatedTime;
 
 
     @Override
