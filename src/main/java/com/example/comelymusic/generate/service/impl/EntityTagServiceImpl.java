@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.comelymusic.generate.service.MusicService;
 import com.example.comelymusic.generate.service.PlaylistService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class EntityTagServiceImpl extends ServiceImpl<EntityTagMapper, EntityTag
     private EntityTagMapper tagMapper;
 
     @Autowired
+    @Lazy
     private MusicService musicService;
 
     @Autowired
@@ -65,6 +67,14 @@ public class EntityTagServiceImpl extends ServiceImpl<EntityTagMapper, EntityTag
             }
         }
         return successTotal;
+    }
+
+    @Override
+    public List<String> selectEntityIdsByTag(String tag) {
+        QueryWrapper<EntityTag> wrapper = new QueryWrapper<>();
+        wrapper.eq("tag_name", tag);
+        List<EntityTag> entityTags = tagMapper.selectList(wrapper);
+        return entityTags.stream().map(EntityTag::getEntityId).collect(Collectors.toList());
     }
 
     private List<String> getIdByEntityName(String entityName, TagType type, String username) {

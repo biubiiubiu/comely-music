@@ -3,7 +3,8 @@ package com.example.comelymusic.generate.controller;
 
 import com.example.comelymusic.generate.common.R;
 import com.example.comelymusic.generate.controller.requests.MusicCreateRequest;
-import com.example.comelymusic.generate.controller.requests.MusicSelectRequest;
+import com.example.comelymusic.generate.controller.requests.MusicSelectByModuleRequest;
+import com.example.comelymusic.generate.controller.requests.MusicSelectByTagsRequest;
 import com.example.comelymusic.generate.controller.responses.MusicBatchCreateResponse;
 import com.example.comelymusic.generate.controller.responses.MusicSelectResponse;
 import com.example.comelymusic.generate.enums.ResultCode;
@@ -55,8 +56,8 @@ public class MusicController {
      * 根据播放模式查询
      */
     @PostMapping("/get-list")
-    public R getMusicListByModule(@Validated @RequestBody MusicSelectRequest musicSelectRequest) {
-        MusicSelectResponse response = musicService.selectByModule(musicSelectRequest);
+    public R getMusicListByModule(@Validated @RequestBody MusicSelectByModuleRequest musicSelectByModuleRequest) {
+        MusicSelectResponse response = musicService.selectByModule(musicSelectByModuleRequest);
         return R.ok().data(response);
     }
 
@@ -66,6 +67,17 @@ public class MusicController {
     @GetMapping("/fuzzy-search-name/{name}")
     public R fuzzySearchMusicByName(@PathVariable("name") String name) {
         MusicSelectResponse response = musicService.fuzzySearch(name);
+        return R.ok().data(response);
+    }
+
+    @PostMapping("/get-list-by-tags")
+    public R getMusicByTags(@Validated @RequestBody MusicSelectByTagsRequest request) {
+        List<String> tags = request.getTags();
+        int num = request.getNum();
+        if (tags == null || tags.size() == 0 || num <= 0) {
+            return R.error();
+        }
+        MusicSelectResponse response = musicService.selectByTags(tags, num);
         return R.ok().data(response);
     }
 }

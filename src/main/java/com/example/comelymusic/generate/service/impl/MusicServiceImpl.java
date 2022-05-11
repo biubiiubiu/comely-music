@@ -1,8 +1,9 @@
 package com.example.comelymusic.generate.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.comelymusic.generate.controller.requests.MusicCreateRequest;
-import com.example.comelymusic.generate.controller.requests.MusicSelectRequest;
+import com.example.comelymusic.generate.controller.requests.MusicSelectByModuleRequest;
 import com.example.comelymusic.generate.controller.requests.PlaylistMusicAddRequest;
 import com.example.comelymusic.generate.controller.responses.MusicBatchCreateResponse;
 import com.example.comelymusic.generate.controller.responses.MusicSelectResponse;
@@ -15,15 +16,18 @@ import com.example.comelymusic.generate.mapper.ArtistMapper;
 import com.example.comelymusic.generate.mapper.FileMapper;
 import com.example.comelymusic.generate.mapper.MusicMapper;
 import com.example.comelymusic.generate.service.ArtistService;
+import com.example.comelymusic.generate.service.EntityTagService;
 import com.example.comelymusic.generate.service.FileService;
 import com.example.comelymusic.generate.service.MusicService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -50,6 +54,10 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
 
     @Autowired
     private ArtistService artistService;
+
+    @Autowired
+    @Lazy
+    private EntityTagService tagService;
 
     private final static int DEFAULT_NUM = 10;
     private final static String DEFAULT_DESCRIPTION = "暂无描述";
@@ -82,18 +90,27 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
      * 随机查询num条满足播放模式条件的歌曲
      */
     @Override
-    public MusicSelectResponse selectByModule(MusicSelectRequest request) {
+    public MusicSelectResponse selectByModule(MusicSelectByModuleRequest request) {
         int num = request.getNum() == null ? DEFAULT_NUM : request.getNum();
         MusicSelectResponse response = new MusicSelectResponse();
-        List<MusicSelectResponse.MusicInfo> responseList = new ArrayList<>();
+        List<MusicSelectResponse.MusicInfo> responseList;
         PlayerModule module = request.getModule();
         if (PlayerModule.RANDOM != module && PlayerModule.STUDY != module) {
             module = PlayerModule.RANDOM;
         }
+
         QueryWrapper<Music> wrapper = new QueryWrapper<>();
         wrapper.eq("player_module", module);
-        List<Music> musicList = musicMapper.selectList(wrapper);
-        responseList = music2MusicResponse(musicList, num);
+        List<Music> allMusic = musicMapper.selectList(wrapper);
+        Set<Music> randomSet = new HashSet<>();
+        num = Math.min(num, allMusic.size());
+        while (randomSet.size() < num) {
+            int index = (int) (Math.random() * allMusic.size());
+            randomSet.add(allMusic.get(index));
+        }
+        List<Music> randomList = new ArrayList<>(randomSet);
+
+        responseList = music2MusicResponse(randomList, num);
         response.setMusicList(responseList);
         return response;
     }
@@ -162,6 +179,30 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
         QueryWrapper<Music> wrapper = new QueryWrapper<>();
         wrapper.eq("name", name);
         return musicMapper.selectList(wrapper);
+    }
+
+    @Override
+    public MusicSelectResponse selectByTags(List<String> tags, int num) {
+        MusicSelectResponse response = new MusicSelectResponse();
+        List<String> musicIdsList = new ArrayList<>();
+        for (String tag : tags) {
+            List<String> tempList = tagService.selectEntityIdsByTag(tag);
+            musicIdsList.addAll(tempList);
+        }
+
+        Set<String> randomSet = new HashSet<>();
+        num = Math.min(num, musicIdsList.size());
+        while (randomSet.size() < num) {
+            int index = (int) (Math.random() * musicIdsList.size());
+            randomSet.add(musicIdsList.get(index));
+        }
+        musicIdsList.clear();
+        musicIdsList.addAll(randomSet);
+        List<Music> musicList = musicMapper.selectBatchIds(musicIdsList);
+        num = Math.min(num, musicList.size());
+        List<MusicSelectResponse.MusicInfo> musicInfos = music2MusicResponse(musicList, num);
+        response.setMusicList(musicInfos);
+        return response;
     }
 
     /**

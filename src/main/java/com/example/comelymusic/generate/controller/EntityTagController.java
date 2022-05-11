@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * <p>
  * 文件表 前端控制器
@@ -38,6 +40,25 @@ public class EntityTagController {
         }
         int result = entityTagService.create(request);
         if (result == 0) {
+            return R.setResult(ResultCode.ENTITY_TAG_ADD_ERROR);
+        }
+        return R.ok();
+    }
+
+    /**
+     * 批量新增entity-tag, 除了username都不能为null
+     */
+    @PostMapping("/batch-create")
+    public R batchCreateEntityTags(@Validated @RequestBody List<EntityTagCreateRequest> requests) {
+        int successTotal = 0;
+        for (EntityTagCreateRequest request : requests) {
+            if (request.getTagName() == null || request.getTagName().length() == 0 || request.getType() == null
+                    || request.getEntityName() == null || request.getEntityName().length() == 0) {
+                successTotal += 0;
+            }
+            successTotal += entityTagService.create(request);
+        }
+        if (successTotal == 0) {
             return R.setResult(ResultCode.ENTITY_TAG_ADD_ERROR);
         }
         return R.ok();

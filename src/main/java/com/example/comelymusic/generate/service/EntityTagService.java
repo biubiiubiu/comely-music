@@ -4,6 +4,8 @@ import com.example.comelymusic.generate.controller.requests.EntityTagCreateReque
 import com.example.comelymusic.generate.entity.EntityTag;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 文件表 服务类
@@ -15,4 +17,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface EntityTagService extends IService<EntityTag> {
 
     int create(EntityTagCreateRequest request);
+
+    List<String> selectEntityIdsByTag(String tag);
 }

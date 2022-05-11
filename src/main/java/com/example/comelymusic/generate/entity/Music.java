@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.example.comelymusic.generate.entity.common.BaseEntity;
 import io.swagger.annotations.ApiModel;
@@ -30,7 +31,7 @@ import lombok.experimental.Accessors;
 public class Music extends BaseEntity<Music> {
 
     @ApiModelProperty("歌曲ID")
-      @TableId(value = "id", type = IdType.ASSIGN_UUID)
+    @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
     @ApiModelProperty("歌曲名")
@@ -65,7 +66,7 @@ public class Music extends BaseEntity<Music> {
     @TableField("player_module")
     private String playerModule;
 
-    public Music(){
+    public Music() {
         super();
     }
 
@@ -92,4 +93,23 @@ public class Music extends BaseEntity<Music> {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        Music music = (Music) o;
+        return Objects.equals(id, music.id) && Objects.equals(name, music.name) && Objects.equals(description, music.description) && Objects.equals(artistId, music.artistId) && Objects.equals(coverId, music.coverId) && Objects.equals(mp3Id, music.mp3Id) && Objects.equals(lyricId, music.lyricId) && Objects.equals(status, music.status) && Objects.equals(playerModule, music.playerModule);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, name, artistId);
+    }
 }

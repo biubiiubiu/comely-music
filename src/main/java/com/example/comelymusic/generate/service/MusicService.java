@@ -1,7 +1,7 @@
 package com.example.comelymusic.generate.service;
 
 import com.example.comelymusic.generate.controller.requests.MusicCreateRequest;
-import com.example.comelymusic.generate.controller.requests.MusicSelectRequest;
+import com.example.comelymusic.generate.controller.requests.MusicSelectByModuleRequest;
 import com.example.comelymusic.generate.controller.requests.PlaylistMusicAddRequest;
 import com.example.comelymusic.generate.controller.responses.MusicBatchCreateResponse;
 import com.example.comelymusic.generate.controller.responses.MusicSelectResponse;
@@ -22,7 +22,7 @@ public interface MusicService extends IService<Music> {
 
     int create(MusicCreateRequest musicCreateRequest);
 
-    MusicSelectResponse selectByModule(MusicSelectRequest musicSelectRequest);
+    MusicSelectResponse selectByModule(MusicSelectByModuleRequest musicSelectByModuleRequest);
 
     MusicSelectResponse fuzzySearch(String name);
 
@@ -31,4 +31,6 @@ public interface MusicService extends IService<Music> {
     MusicBatchCreateResponse batchCreate(List<MusicCreateRequest> requestList);
 
     List<Music> selectByName(String name);
+
+    MusicSelectResponse selectByTags(List<String> tags, int num);
 }
