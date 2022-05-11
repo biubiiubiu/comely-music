@@ -1,0 +1,1 @@
+ALTER TABLE playlist DROP COLUMN `created_by_user_id`;

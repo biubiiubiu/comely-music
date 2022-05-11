@@ -52,6 +52,10 @@ public class User extends BaseEntity<User> {
     @TableField("role")
     private Integer role = 0;
 
+    @ApiModelProperty("我喜欢 歌单ID，每个用户唯一")
+    @TableField("my_like_playlist_id")
+    private String myLikePlaylistId;
+
     public User(){
         super();
     }
@@ -73,6 +77,7 @@ public class User extends BaseEntity<User> {
                 .append(", role=").append(getRole())
                 .append(", created_time=").append(getCreatedTime())
                 .append(", updated_time=").append(getUpdatedTime())
+                .append(", my_like_playlist_id=").append(getMyLikePlaylistId())
                 .append("]");
         return sb.toString();
     }

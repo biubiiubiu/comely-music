@@ -5,17 +5,22 @@ import com.example.comelymusic.generate.common.ComelyMusicException;
 import com.example.comelymusic.generate.common.utils.JwtUtils;
 import com.example.comelymusic.generate.common.utils.RedisUtils;
 import com.example.comelymusic.generate.controller.requests.LoginRequest;
+import com.example.comelymusic.generate.controller.requests.PlaylistCreateRequest;
+import com.example.comelymusic.generate.controller.requests.PlaylistSelectRequest;
 import com.example.comelymusic.generate.controller.requests.UserCreateRequest;
 import com.example.comelymusic.generate.controller.responses.LoginResponse;
 import com.example.comelymusic.generate.controller.responses.UserInfoResponse;
+import com.example.comelymusic.generate.entity.Playlist;
 import com.example.comelymusic.generate.entity.User;
 import com.example.comelymusic.generate.enums.Gender;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.mapper.UserMapper;
+import com.example.comelymusic.generate.service.PlaylistService;
 import com.example.comelymusic.generate.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -33,6 +38,7 @@ import java.util.UUID;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     private static final String DEFAULT_AVATAR_ID = "DEFAULT-AVATAR-ID";
     private static final String DEFAULT_NICKNAME = "新用户";
+    private static final String MY_LIKE_PLAYLIST = "我喜欢";
 
     @Autowired
     UserMapper userMapper;
@@ -42,6 +48,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    @Lazy
+    private PlaylistService playlistService;
 
     /**
      * 存储到redis的sts-token的key前缀，加上用户名就可以组成key
@@ -148,6 +158,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         newUser.setGender(Gender.UNKNOWN.getGender());
         newUser.setRole(0);
         newUser.setNickname(DEFAULT_NICKNAME + UUID.randomUUID().toString().substring(0, 8));
+        newUser.setMyLikePlaylistId(createMyLikePlaylist(request.getUsername()));
         userMapper.insert(newUser);
 
         String key = LOGIN_TOKEN_KEY_PREFIX + request.getUsername();
@@ -232,7 +243,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setNickname(userCreateRequest.getNickname());
         user.setGender(userCreateRequest.getGender());
         user.setRole(userCreateRequest.getRole());
+        String myLikePlaylistId = createMyLikePlaylist(userCreateRequest.getUsername());
+        user.setMyLikePlaylistId(myLikePlaylistId);
         return user;
+    }
+
+    private String createMyLikePlaylist(String username) {
+        PlaylistCreateRequest request = new PlaylistCreateRequest();
+        request.setUsername(username).setName(MY_LIKE_PLAYLIST);
+        int i = playlistService.create(request);
+        if (i != 0) {
+            Playlist myLikePlaylist = playlistService.selectPlaylist(
+                    new PlaylistSelectRequest().setPlaylistName(MY_LIKE_PLAYLIST).setUsername(username));
+            return myLikePlaylist.getId();
+        }
+        return null;
     }
 
     /**

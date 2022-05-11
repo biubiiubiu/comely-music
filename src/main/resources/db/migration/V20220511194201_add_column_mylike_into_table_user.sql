@@ -1,0 +1,1 @@
+ALTER TABLE `user` ADD `my_like_playlist_id` VARCHAR(32) NOT NULL COMMENT '我喜欢 歌单ID，每个用户唯一';
