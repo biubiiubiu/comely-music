@@ -13,7 +13,6 @@ import java.util.List;
  */
 @Data
 public class MusicSelectByTagsRequest {
-    private String username;
     private List<String> tags;
     private Integer num;
 }
