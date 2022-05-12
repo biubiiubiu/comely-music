@@ -1,11 +1,11 @@
 package com.example.comelymusic.generate.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.comelymusic.generate.controller.requests.PlaylistMusicAddRequest;
 import com.example.comelymusic.generate.controller.requests.PlaylistSelectRequest;
 import com.example.comelymusic.generate.entity.Music;
 import com.example.comelymusic.generate.entity.Playlist;
 import com.example.comelymusic.generate.entity.PlaylistMusic;
-import com.example.comelymusic.generate.mapper.MusicMapper;
 import com.example.comelymusic.generate.mapper.PlaylistMusicMapper;
 import com.example.comelymusic.generate.service.MusicService;
 import com.example.comelymusic.generate.service.PlaylistMusicService;
@@ -14,7 +14,8 @@ import com.example.comelymusic.generate.service.PlaylistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.*;
 
 /**
  * <p>
@@ -47,15 +48,30 @@ public class PlaylistMusicServiceImpl extends ServiceImpl<PlaylistMusicMapper, P
 
         if (playlist != null) {
             String playlistId = playlist.getId();
+            // 去重
+            duplicateRemoval(musicList);
 
             int total = 0;
             for (Music music : musicList) {
+                QueryWrapper<PlaylistMusic> wrapper = new QueryWrapper<>();
+                wrapper.eq("playlist_id", playlistId).eq("music_id", music.getId());
+                PlaylistMusic existMusic = mapper.selectOne(wrapper);
+                if (existMusic != null) {
+                    log.warn("重复插入音乐名：" + music.getName());
+                    continue;
+                }
                 total += mapper.insert(new PlaylistMusic().setMusic_id(music.getId()).setPlaylistId(playlistId));
             }
             // 修改playlist歌曲数量
             playlistService.addMusicNum(playlistId, playlist.getMusicNum() + total);
             return total;
         }
-        return 0;
+        return -1;
+    }
+
+    private void duplicateRemoval(List<Music> musicList) {
+        Set<Music> set = new HashSet<>(musicList);
+        musicList = new ArrayList<>();
+        musicList.addAll(set);
     }
 }

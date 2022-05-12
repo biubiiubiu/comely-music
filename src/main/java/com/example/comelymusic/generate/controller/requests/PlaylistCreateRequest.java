@@ -15,7 +15,7 @@ public class PlaylistCreateRequest {
     private String coverId;
     private Integer musicNum;
     private String description;
-    private String status;
+    private Integer visibility;
 
     public PlaylistCreateRequest setName(String name) {
         this.name = name;
@@ -42,8 +42,8 @@ public class PlaylistCreateRequest {
         return this;
     }
 
-    public PlaylistCreateRequest setStatus(String status) {
-        this.status = status;
+    public PlaylistCreateRequest setVisibility(Integer visibility) {
+        this.visibility = visibility;
         return this;
     }
 }

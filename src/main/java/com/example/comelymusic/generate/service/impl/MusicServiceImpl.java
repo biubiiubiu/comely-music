@@ -139,7 +139,9 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
                 wrapper.eq("name", info.getTitle());
                 wrapper.eq("artist_id", artist.getId());
                 Music music = musicMapper.selectOne(wrapper);
-                result.add(music);
+                if (music != null) {
+                    result.add(music);
+                }
             } else {
                 log.error("找不到音乐：" + info.getTitle() + "，歌手：" + info.getArtistName());
             }
