@@ -3,6 +3,8 @@ package com.example.comelymusic.generate.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.example.comelymusic.generate.entity.common.BaseEntity;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -24,7 +26,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @TableName("fans_artist")
 @ApiModel(value = "Fans_artist对象", description = "粉丝歌手关联表")
-public class FansArtist extends Model<FansArtist> {
+public class FansArtist extends BaseEntity<FansArtist> {
 
     @ApiModelProperty("用户ID（粉丝）")
     @TableField("user_id")

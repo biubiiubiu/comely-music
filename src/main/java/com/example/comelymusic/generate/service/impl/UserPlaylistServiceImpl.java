@@ -5,15 +5,19 @@ import com.example.comelymusic.generate.controller.requests.PlaylistSelectReques
 import com.example.comelymusic.generate.entity.Playlist;
 import com.example.comelymusic.generate.entity.User;
 import com.example.comelymusic.generate.entity.UserPlaylist;
+import com.example.comelymusic.generate.mapper.PlaylistMapper;
 import com.example.comelymusic.generate.mapper.UserPlaylistMapper;
 import com.example.comelymusic.generate.service.PlaylistService;
 import com.example.comelymusic.generate.service.UserPlaylistService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.comelymusic.generate.service.UserService;
-import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -37,6 +41,9 @@ public class UserPlaylistServiceImpl extends ServiceImpl<UserPlaylistMapper, Use
     @Autowired
     private PlaylistService playlistService;
 
+    @Autowired
+    private PlaylistMapper playlistMapper;
+
     /**
      * 创建用户-歌单 关系
      *
@@ -58,7 +65,7 @@ public class UserPlaylistServiceImpl extends ServiceImpl<UserPlaylistMapper, Use
         }
         entity.setUserId(userid);
         entity.setPlaylistId(playlistId);
-        entity.setRelationMap(relation);
+        entity.setRelation(relation);
         return mapper.insert(entity);
     }
 
@@ -75,6 +82,18 @@ public class UserPlaylistServiceImpl extends ServiceImpl<UserPlaylistMapper, Use
         wrapper.eq("user_id", userid);
         wrapper.eq("playlist_id", playlistId);
         return mapper.delete(wrapper);
+    }
+
+    @Override
+    public List<Playlist> selectPlaylists(String username, Integer relation) {
+        QueryWrapper<UserPlaylist> wrapper = new QueryWrapper<>();
+        User user = userService.selectByUsername(username);
+        String userid = user.getId();
+        wrapper.eq("user_id", userid);
+        wrapper.eq("relation", relation);
+        List<UserPlaylist> userPlaylists = mapper.selectList(wrapper);
+        List<String> playlistIds = userPlaylists.stream().map(UserPlaylist::getPlaylistId).collect(Collectors.toList());
+        return playlistMapper.selectBatchIds(playlistIds);
     }
 
     private boolean checkoutDuplicate(String playlistId, String userid) {

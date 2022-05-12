@@ -158,7 +158,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         newUser.setGender(Gender.UNKNOWN.getGender());
         newUser.setRole(0);
         newUser.setNickname(DEFAULT_NICKNAME + UUID.randomUUID().toString().substring(0, 8));
-        newUser.setMyLikePlaylistId(createMyLikePlaylist(request.getUsername()));
         userMapper.insert(newUser);
 
         String key = LOGIN_TOKEN_KEY_PREFIX + request.getUsername();
@@ -243,8 +242,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setNickname(userCreateRequest.getNickname());
         user.setGender(userCreateRequest.getGender());
         user.setRole(userCreateRequest.getRole());
-        String myLikePlaylistId = createMyLikePlaylist(userCreateRequest.getUsername());
-        user.setMyLikePlaylistId(myLikePlaylistId);
         return user;
     }
 

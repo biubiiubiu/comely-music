@@ -3,6 +3,7 @@ package com.example.comelymusic.generate.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.example.comelymusic.generate.entity.common.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -24,7 +25,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @TableName("playlist_music")
 @ApiModel(value = "Playlist_music对象", description = "歌单歌曲表")
-public class PlaylistMusic extends Model<PlaylistMusic> {
+public class PlaylistMusic extends BaseEntity<PlaylistMusic> {
 
     @ApiModelProperty("歌单ID")
     @TableField("playlist_id")
