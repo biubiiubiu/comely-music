@@ -15,7 +15,7 @@ public enum ResultCode {
      */
     SUCCESS(true, 20000, "成功"),
     UNKNOWN_ERROR(false, 20001, "未知错误"),
-    PARAM_ERROR(false, 20002, "参数错误"),
+    PARAM_ERROR(false, 20002, "非法参数请求"),
     NULL_POINT(false, 20003, "空指针异常"),
     HTTP_CLIENT_ERROR(false, 20004, "http client异常"),
 
@@ -33,13 +33,11 @@ public enum ResultCode {
     MUSIC_CREATE_ERROR(false, 60001, "创建音乐失败!"),
     MUSIC_EXISTS(true, 60002, "音乐已存在!"),
 
-    PLAYLIST_CREATE_ERROR(false, 70001, "创建音乐失败!"),
-    PLAYLIST_DELETE_ERROR(false, 70002, "删除音乐失败!"),
-    PLAYLIST_ADD_MUSIC_ERROR(false, 70003, "添加音乐到歌单失败!"),
+    PLAYLIST_CREATE_ERROR(false, 70001, "创建歌单失败!"),
+    PLAYLIST_NOT_EXIST(false, 70002, "歌单不存在!"),
+    PLAYLIST_CREATE_DUPLICATE_ERROR(false, 70003, "歌单已存在!"),
 
     ENTITY_TAG_ADD_ERROR(false, 80003, "添加标签失败!");
-
-
     // 响应是否成功
     private Boolean success;
     // 响应状态码

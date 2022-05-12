@@ -49,9 +49,9 @@ public class Playlist extends BaseEntity<Playlist> {
     @TableField("description")
     private String description;
 
-    @ApiModelProperty("歌单上架状态，DRAFT-草稿，PUBLISHED-已上架，CLOSED-已下架")
-    @TableField("status")
-    private String status;
+    @ApiModelProperty("歌单可见性，0-仅自己可见，1-公开可见，2-仅好友可见")
+    @TableField("visibility")
+    private Integer visibility;
 
     @ApiModelProperty("歌单封面ID")
     @TableField("cover_id")

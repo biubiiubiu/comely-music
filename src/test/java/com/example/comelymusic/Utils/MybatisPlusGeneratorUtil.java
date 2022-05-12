@@ -87,7 +87,7 @@ public class MybatisPlusGeneratorUtil {
                 .disableSqlFilter()
 //                .likeTable(new LikeTable("USER"))
                 // 这里是需要生成的对应表名
-                .addInclude("entity_tag")
+                .addInclude("user_playlist")
 //                .addTablePrefix("t_", "c_")
 //                .addFieldSuffix("_flag")
                 /*   .entityBuilder()

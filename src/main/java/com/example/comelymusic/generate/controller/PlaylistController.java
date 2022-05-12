@@ -30,6 +30,9 @@ public class PlaylistController {
     @PostMapping("/create")
     public R create(@Validated @RequestBody PlaylistCreateRequest request) {
         int result = playlistService.create(request);
+        if (result == -1) {
+            return R.setResult(ResultCode.PLAYLIST_CREATE_DUPLICATE_ERROR);
+        }
         if (result == 0) {
             return R.setResult(ResultCode.PLAYLIST_CREATE_ERROR);
         }
@@ -43,11 +46,11 @@ public class PlaylistController {
     public R delete(@Validated @RequestBody PlaylistSelectRequest request) {
         if (request.getUsername() == null || request.getUsername().length() == 0
                 || request.getPlaylistName() == null || request.getPlaylistName().length() == 0) {
-            return R.setResult(ResultCode.PLAYLIST_DELETE_ERROR);
+            return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
         }
         int delete = playlistService.deletePlaylist(request);
         if (delete == 0) {
-            return R.setResult(ResultCode.PLAYLIST_DELETE_ERROR);
+            return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
         }
         return R.ok();
     }

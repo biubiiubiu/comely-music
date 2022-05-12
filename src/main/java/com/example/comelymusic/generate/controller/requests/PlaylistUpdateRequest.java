@@ -24,6 +24,6 @@ public class PlaylistUpdateRequest {
     private String coverId;
     private Integer musicNum;
     private String description;
-    private String status;
+    private Integer visibility;
     private Integer collectionNum;
 }

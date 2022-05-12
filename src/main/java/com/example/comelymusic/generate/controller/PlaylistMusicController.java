@@ -33,13 +33,14 @@ public class PlaylistMusicController {
     @PostMapping("/add-music")
     public R addMusic(@Validated @RequestBody PlaylistMusicAddRequest request) {
         if (request.getUsername() == null || request.getPlaylistName() == null || request.getUsername().length() == 0 || request.getPlaylistName().length() == 0) {
-            return R.setResult(ResultCode.PLAYLIST_ADD_MUSIC_ERROR);
+            return R.setResult(ResultCode.PARAM_ERROR);
         }
         int result = playlistMusicService.addMusic2Playlist(request);
-        if (result == 0) {
-            return R.setResult(ResultCode.PLAYLIST_ADD_MUSIC_ERROR);
+        if (result == -1) {
+            // 歌单不存在
+            return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
         }
-        return R.ok();
+        return R.ok().message("成功加入的歌曲数量：" + result);
     }
 }
 
