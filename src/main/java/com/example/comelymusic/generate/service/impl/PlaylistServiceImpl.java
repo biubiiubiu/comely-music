@@ -100,10 +100,10 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     }
 
     /**
-     * 修改歌单信息,旧的歌单名创建者，新的歌单信息
+     * 修改歌单信息，旧的歌单名+创建者，新的歌单信息
      */
     @Override
-    public void updatePlaylist(PlaylistUpdateRequest request) {
+    public int updatePlaylist(PlaylistUpdateRequest request) {
         Playlist playlist = selectPlaylist(new PlaylistSelectRequest().setPlaylistName(request.getOldName()).setUsername(request.getOldUsername()));
         if (playlist != null) {
             if (request.getNewName() != null && !request.getNewName().equals(playlist.getName())) {
@@ -130,8 +130,9 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
             if (request.getCollectionNum() != null) {
                 playlist.setCollectNum(request.getCollectionNum());
             }
-            playlistMapper.updateById(playlist);
+            return playlistMapper.updateById(playlist);
         }
+        return -1;
     }
 
     /**

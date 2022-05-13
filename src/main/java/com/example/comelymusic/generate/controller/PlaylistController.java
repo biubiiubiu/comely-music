@@ -4,6 +4,7 @@ package com.example.comelymusic.generate.controller;
 import com.example.comelymusic.generate.common.R;
 import com.example.comelymusic.generate.controller.requests.PlaylistCreateRequest;
 import com.example.comelymusic.generate.controller.requests.PlaylistSelectRequest;
+import com.example.comelymusic.generate.controller.requests.PlaylistUpdateRequest;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.service.PlaylistService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,21 @@ public class PlaylistController {
         int delete = playlistService.deletePlaylist(request);
         if (delete == 0) {
             return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
+        }
+        return R.ok();
+    }
+
+    /**
+     * 修改歌单
+     */
+    @PostMapping("/update")
+    public R update(@Validated @RequestBody PlaylistUpdateRequest request) {
+        int result = playlistService.updatePlaylist(request);
+        if (result == -1) {
+            return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
+        }
+        if (result == 0) {
+            return R.setResult(ResultCode.PLAYLIST_CREATE_ERROR);
         }
         return R.ok();
     }

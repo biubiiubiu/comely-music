@@ -20,7 +20,7 @@ public interface PlaylistService extends IService<Playlist> {
 
     int deletePlaylist(PlaylistSelectRequest request);
 
-    void updatePlaylist(PlaylistUpdateRequest request);
+    int updatePlaylist(PlaylistUpdateRequest request);
 
     Playlist selectPlaylist(PlaylistSelectRequest request);
 

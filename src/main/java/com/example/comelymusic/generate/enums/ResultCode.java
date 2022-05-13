@@ -36,6 +36,7 @@ public enum ResultCode {
     PLAYLIST_CREATE_ERROR(false, 70001, "创建歌单失败!"),
     PLAYLIST_NOT_EXIST(false, 70002, "歌单不存在!"),
     PLAYLIST_CREATE_DUPLICATE_ERROR(false, 70003, "歌单已存在!"),
+    PLAYLIST_UPdDATE_ERROR(false, 70004, "修改歌单失败!"),
 
     ENTITY_TAG_ADD_ERROR(false, 80003, "添加标签失败!");
     // 响应是否成功
