@@ -22,5 +22,8 @@ public class UserPlaylistsSelectResponse {
     public static class PlaylistModel {
         private String name;
         private Integer musicNum;
+        private Integer visibility;
+        private String createdUserNickname;
+        private String description;
     }
 }
