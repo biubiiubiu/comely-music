@@ -14,12 +14,12 @@ import java.util.List;
  */
 @Data
 public class UserPlaylistsSelectResponse {
-    List<PlaylistModel> playlistModelList;
+    List<PlaylistInfo> playlistInfoList;
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PlaylistModel {
+    public static class PlaylistInfo {
         private String name;
         private Integer musicNum;
         private Integer visibility;

@@ -22,9 +22,12 @@ public interface MusicService extends IService<Music> {
 
     int create(MusicCreateRequest musicCreateRequest);
 
-    MusicSelectResponse selectByModule(MusicSelectByModuleRequest musicSelectByModuleRequest);
+    List<Music> selectByModule(MusicSelectByModuleRequest musicSelectByModuleRequest);
 
-    MusicSelectResponse fuzzySearch(String name);
+    /**
+     * 根据歌名模糊搜索歌曲
+     */
+    List<Music> fuzzySearch(String musicName);
 
     List<Music> getMusicListByMusicAddInfoList(List<PlaylistMusicAddRequest.MusicAddInfo> musicAddInfoList);
 
@@ -32,5 +35,12 @@ public interface MusicService extends IService<Music> {
 
     List<Music> selectByName(String name);
 
-    MusicSelectResponse selectByTags(List<String> tags, int num);
+    List<Music> selectByTags(List<String> tags, int num);
+
+    /**
+     * List<Music>经过查询转换成List<MusicSelectResponse.MusicInfo>
+     */
+    List<MusicSelectResponse.MusicInfo> transMusiclist2MusicinfoList(List<Music> musicList);
+
+    List<Music> selectBatchIds(List<String> musicIdList);
 }

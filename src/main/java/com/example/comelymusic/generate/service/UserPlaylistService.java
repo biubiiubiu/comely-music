@@ -18,6 +18,4 @@ public interface UserPlaylistService extends IService<UserPlaylist> {
     int create(String playlistName, String username, Integer relation);
 
     int delete(String playlistName, String username);
-
-    List<Playlist> selectPlaylists(String username, Integer relation);
 }

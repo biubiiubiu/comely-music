@@ -7,6 +7,7 @@ import com.example.comelymusic.generate.controller.requests.MusicSelectByModuleR
 import com.example.comelymusic.generate.controller.requests.MusicSelectByTagsRequest;
 import com.example.comelymusic.generate.controller.responses.MusicBatchCreateResponse;
 import com.example.comelymusic.generate.controller.responses.MusicSelectResponse;
+import com.example.comelymusic.generate.entity.Music;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.service.MusicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,10 @@ public class MusicController {
      */
     @PostMapping("/get-list")
     public R getMusicListByModule(@Validated @RequestBody MusicSelectByModuleRequest musicSelectByModuleRequest) {
-        MusicSelectResponse response = musicService.selectByModule(musicSelectByModuleRequest);
+        List<Music> musicList = musicService.selectByModule(musicSelectByModuleRequest);
+        MusicSelectResponse response = new MusicSelectResponse();
+        List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(musicList);
+        response.setMusicList(musicInfos);
         return R.ok().data(response);
     }
 
@@ -66,7 +70,10 @@ public class MusicController {
      */
     @GetMapping("/fuzzy-search-name/{name}")
     public R fuzzySearchMusicByName(@PathVariable("name") String name) {
-        MusicSelectResponse response = musicService.fuzzySearch(name);
+        List<Music> musicList = musicService.fuzzySearch(name);
+        MusicSelectResponse response = new MusicSelectResponse();
+        List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(musicList);
+        response.setMusicList(musicInfos);
         return R.ok().data(response);
     }
 
@@ -77,7 +84,10 @@ public class MusicController {
         if (tags == null || tags.size() == 0 || num <= 0) {
             return R.error();
         }
-        MusicSelectResponse response = musicService.selectByTags(tags, num);
+        List<Music> musicList = musicService.selectByTags(tags, num);
+        MusicSelectResponse response = new MusicSelectResponse();
+        List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(musicList);
+        response.setMusicList(musicInfos);
         return R.ok().data(response);
     }
 }

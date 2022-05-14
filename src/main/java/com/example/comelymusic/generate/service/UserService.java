@@ -28,4 +28,6 @@ public interface UserService extends IService<User> {
     boolean getLoginStatus(String username);
 
     User selectByUsername(String username);
+
+    User selectById(String userid);
 }

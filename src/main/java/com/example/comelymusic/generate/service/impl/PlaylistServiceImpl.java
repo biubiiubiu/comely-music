@@ -3,21 +3,28 @@ package com.example.comelymusic.generate.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.comelymusic.generate.controller.requests.PlaylistCreateRequest;
+import com.example.comelymusic.generate.controller.requests.PlaylistMusicAddRequest;
 import com.example.comelymusic.generate.controller.requests.PlaylistSelectRequest;
 import com.example.comelymusic.generate.controller.requests.PlaylistUpdateRequest;
-import com.example.comelymusic.generate.entity.Playlist;
-import com.example.comelymusic.generate.entity.PlaylistMusic;
-import com.example.comelymusic.generate.entity.User;
+import com.example.comelymusic.generate.controller.responses.UserPlaylistsSelectResponse;
+import com.example.comelymusic.generate.entity.*;
 import com.example.comelymusic.generate.enums.UserPlaylistRelation;
 import com.example.comelymusic.generate.mapper.PlaylistMapper;
 import com.example.comelymusic.generate.mapper.PlaylistMusicMapper;
+import com.example.comelymusic.generate.mapper.UserPlaylistMapper;
+import com.example.comelymusic.generate.service.MusicService;
 import com.example.comelymusic.generate.service.PlaylistService;
 import com.example.comelymusic.generate.service.UserPlaylistService;
 import com.example.comelymusic.generate.service.UserService;
-import com.sun.media.jfxmedia.events.PlayerTimeListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -42,9 +49,14 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     @Autowired
     private UserPlaylistService userPlaylistService;
 
-    /**
-     * （创建歌单,并创建用户歌单关系），原子操作，返回结果
-     */
+    @Lazy
+    @Autowired
+    private UserPlaylistMapper userPlaylistMapper;
+
+    @Lazy
+    @Autowired
+    private MusicService musicService;
+
     @Override
     public int create(PlaylistCreateRequest request) {
         if (checkoutDuplicate(request.getName(), request.getUsername())) {
@@ -75,9 +87,6 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         return playlist != null;
     }
 
-    /**
-     * 根据创建用户username和歌单名称来删除歌单,并删除用户-歌单关系
-     */
     @Override
     public int deletePlaylist(PlaylistSelectRequest request) {
         // 先删关系表，再删歌单，否则会触发SQL外键异常
@@ -99,9 +108,6 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         }
     }
 
-    /**
-     * 修改歌单信息，旧的歌单名+创建者，新的歌单信息
-     */
     @Override
     public int updatePlaylist(PlaylistUpdateRequest request) {
         Playlist playlist = selectPlaylist(new PlaylistSelectRequest().setPlaylistName(request.getOldName()).setUsername(request.getOldUsername()));
@@ -135,9 +141,6 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         return -1;
     }
 
-    /**
-     * 根据创建者用户名和歌单名查询歌单信息
-     */
     @Override
     public Playlist selectPlaylist(PlaylistSelectRequest request) {
         QueryWrapper<Playlist> wrapper = new QueryWrapper<>();
@@ -151,9 +154,6 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         return null;
     }
 
-    /**
-     * 增加歌曲数量
-     */
     @Override
     public void addMusicNum(String playlistId, int addNum) {
         if (addNum != 0) {
@@ -161,6 +161,59 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
             playlist.setMusicNum(playlist.getMusicNum() + addNum);
             playlistMapper.updateById(playlist);
         }
+    }
+
+    @Override
+    public int addMusic2Playlist(PlaylistMusicAddRequest request) {
+        List<Music> musicList = musicService.getMusicListByMusicAddInfoList(request.getMusicAddInfoList());
+
+        Playlist playlist = selectPlaylist(new PlaylistSelectRequest()
+                .setUsername(request.getUsername()).setPlaylistName(request.getPlaylistName()));
+
+        if (playlist != null) {
+            String playlistId = playlist.getId();
+            // 去重
+            duplicateRemoval(musicList);
+
+            int total = 0;
+            for (Music music : musicList) {
+                QueryWrapper<PlaylistMusic> wrapper = new QueryWrapper<>();
+                wrapper.eq("playlist_id", playlistId).eq("music_id", music.getId());
+                PlaylistMusic existMusic = playlistMusicMapper.selectOne(wrapper);
+                if (existMusic != null) {
+                    log.warn("重复插入音乐名：" + music.getName());
+                    continue;
+                }
+                total += playlistMusicMapper.insert(new PlaylistMusic().setMusicId(music.getId()).setPlaylistId(playlistId));
+            }
+            // 修改playlist歌曲数量
+            addMusicNum(playlistId, playlist.getMusicNum() + total);
+            return total;
+        }
+        return -1;
+    }
+
+    @Override
+    public List<Playlist> selectPlaylists(String username, Integer relation) {
+        QueryWrapper<UserPlaylist> wrapper = new QueryWrapper<>();
+        User user = userService.selectByUsername(username);
+        String userid = user.getId();
+        wrapper.eq("user_id", userid);
+        wrapper.eq("relation", relation);
+        List<UserPlaylist> userPlaylists = userPlaylistMapper.selectList(wrapper);
+        List<String> playlistIds = userPlaylists.stream().map(UserPlaylist::getPlaylistId).collect(Collectors.toList());
+        return playlistMapper.selectBatchIds(playlistIds);
+    }
+
+    @Override
+    public UserPlaylistsSelectResponse.PlaylistInfo transPlaylist2PlaylistInfo(Playlist playlist) {
+        User user = userService.selectById(playlist.getCreatedByUserId());
+        String createdUserNickname = null;
+        if (user != null) {
+            createdUserNickname = user.getNickname();
+        }
+        return new UserPlaylistsSelectResponse.PlaylistInfo(playlist.getName(),
+                playlist.getMusicNum(), playlist.getVisibility(), createdUserNickname, playlist.getDescription());
     }
 
     /**
@@ -198,5 +251,11 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
             playlist.setMusicNum(request.getMusicNum());
         }
         return playlist;
+    }
+
+    private void duplicateRemoval(List<Music> musicList) {
+        Set<Music> set = new HashSet<>(musicList);
+        musicList = new ArrayList<>();
+        musicList.addAll(set);
     }
 }

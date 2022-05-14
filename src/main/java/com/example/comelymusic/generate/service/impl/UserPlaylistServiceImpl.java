@@ -84,18 +84,6 @@ public class UserPlaylistServiceImpl extends ServiceImpl<UserPlaylistMapper, Use
         return mapper.delete(wrapper);
     }
 
-    @Override
-    public List<Playlist> selectPlaylists(String username, Integer relation) {
-        QueryWrapper<UserPlaylist> wrapper = new QueryWrapper<>();
-        User user = userService.selectByUsername(username);
-        String userid = user.getId();
-        wrapper.eq("user_id", userid);
-        wrapper.eq("relation", relation);
-        List<UserPlaylist> userPlaylists = mapper.selectList(wrapper);
-        List<String> playlistIds = userPlaylists.stream().map(UserPlaylist::getPlaylistId).collect(Collectors.toList());
-        return playlistMapper.selectBatchIds(playlistIds);
-    }
-
     private boolean checkoutDuplicate(String playlistId, String userid) {
         QueryWrapper<UserPlaylist> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id", userid);

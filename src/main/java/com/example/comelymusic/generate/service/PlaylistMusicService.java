@@ -4,6 +4,8 @@ import com.example.comelymusic.generate.controller.requests.PlaylistMusicAddRequ
 import com.example.comelymusic.generate.entity.PlaylistMusic;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 歌单歌曲表 服务类
@@ -13,6 +15,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-04-08
  */
 public interface PlaylistMusicService extends IService<PlaylistMusic> {
-
-    int addMusic2Playlist(PlaylistMusicAddRequest request);
+    /**
+     * 查询某个歌单的所有music id
+     */
+    List<String> selectMusicIdsByPlaylistId(String playlistId);
 }

@@ -1,10 +1,14 @@
 package com.example.comelymusic.generate.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.comelymusic.generate.controller.requests.PlaylistCreateRequest;
+import com.example.comelymusic.generate.controller.requests.PlaylistMusicAddRequest;
 import com.example.comelymusic.generate.controller.requests.PlaylistSelectRequest;
 import com.example.comelymusic.generate.controller.requests.PlaylistUpdateRequest;
+import com.example.comelymusic.generate.controller.responses.UserPlaylistsSelectResponse;
 import com.example.comelymusic.generate.entity.Playlist;
-import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,13 +20,43 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface PlaylistService extends IService<Playlist> {
 
+    /**
+     * （创建歌单,并创建用户歌单关系），原子操作，返回结果
+     */
     int create(PlaylistCreateRequest request);
 
+    /**
+     * 根据创建用户username和歌单名称来删除歌单,并删除用户-歌单关系
+     */
     int deletePlaylist(PlaylistSelectRequest request);
 
+    /**
+     * 修改歌单信息，旧的歌单名+创建者，新的歌单信息
+     */
     int updatePlaylist(PlaylistUpdateRequest request);
 
+    /**
+     * 根据创建者用户名和歌单名查询歌单信息
+     */
     Playlist selectPlaylist(PlaylistSelectRequest request);
 
+    /**
+     * 增加歌曲数量
+     */
     void addMusicNum(String playlistId, int addNum);
+
+    /**
+     * 把music加入歌单
+     */
+    int addMusic2Playlist(PlaylistMusicAddRequest request);
+
+    /**
+     * 查询user所有relation（创建、收藏、喜欢）的歌单
+     */
+    List<Playlist> selectPlaylists(String username, Integer relation);
+
+    /**
+     * playlist转换成playlistInfo
+     */
+    UserPlaylistsSelectResponse.PlaylistInfo transPlaylist2PlaylistInfo(Playlist playlist);
 }

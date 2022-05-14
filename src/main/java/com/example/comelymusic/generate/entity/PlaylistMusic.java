@@ -2,7 +2,6 @@ package com.example.comelymusic.generate.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.example.comelymusic.generate.entity.common.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -33,7 +32,7 @@ public class PlaylistMusic extends BaseEntity<PlaylistMusic> {
 
     @ApiModelProperty("歌曲ID")
     @TableField("music_id")
-    private String music_id;
+    private String musicId;
 
 
     @Override
@@ -46,8 +45,8 @@ public class PlaylistMusic extends BaseEntity<PlaylistMusic> {
         return this;
     }
 
-    public PlaylistMusic setMusic_id(String music_id) {
-        this.music_id = music_id;
+    public PlaylistMusic setMusicId(String musicId) {
+        this.musicId = musicId;
         return this;
     }
 }

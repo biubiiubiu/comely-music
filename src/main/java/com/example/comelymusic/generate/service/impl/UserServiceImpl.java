@@ -133,6 +133,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public User selectById(String userid) {
+        return userMapper.selectById(userid);
+    }
+
+    @Override
     public Boolean judgeNewUser(LoginRequest request) {
         return !checkUserNameExists(request.getUsername());
     }

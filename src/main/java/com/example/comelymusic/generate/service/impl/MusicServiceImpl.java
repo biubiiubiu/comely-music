@@ -90,10 +90,8 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
      * 随机查询num条满足播放模式条件的歌曲
      */
     @Override
-    public MusicSelectResponse selectByModule(MusicSelectByModuleRequest request) {
+    public List<Music> selectByModule(MusicSelectByModuleRequest request) {
         int num = request.getNum() == null ? DEFAULT_NUM : request.getNum();
-        MusicSelectResponse response = new MusicSelectResponse();
-        List<MusicSelectResponse.MusicInfo> responseList;
         PlayerModule module = request.getModule();
         if (PlayerModule.RANDOM != module && PlayerModule.STUDY != module) {
             module = PlayerModule.RANDOM;
@@ -108,25 +106,14 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
             int index = (int) (Math.random() * allMusic.size());
             randomSet.add(allMusic.get(index));
         }
-        List<Music> randomList = new ArrayList<>(randomSet);
-
-        responseList = music2MusicResponse(randomList, num);
-        response.setMusicList(responseList);
-        return response;
+        return new ArrayList<>(randomSet);
     }
 
-    /**
-     * 根据歌名模糊搜索歌曲
-     */
     @Override
-    public MusicSelectResponse fuzzySearch(String name) {
+    public List<Music> fuzzySearch(String musicName) {
         QueryWrapper<Music> wrapper = new QueryWrapper<>();
-        wrapper.like("name", name);
-        List<Music> musicList = musicMapper.selectList(wrapper);
-        List<MusicSelectResponse.MusicInfo> musicInfos = music2MusicResponse(musicList, musicList.size());
-        MusicSelectResponse response = new MusicSelectResponse();
-        response.setMusicList(musicInfos);
-        return response;
+        wrapper.like("name", musicName);
+        return musicMapper.selectList(wrapper);
     }
 
     @Override
@@ -184,8 +171,7 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
     }
 
     @Override
-    public MusicSelectResponse selectByTags(List<String> tags, int num) {
-        MusicSelectResponse response = new MusicSelectResponse();
+    public List<Music> selectByTags(List<String> tags, int num) {
         List<String> musicIdsList = new ArrayList<>();
         for (String tag : tags) {
             List<String> tempList = tagService.selectEntityIdsByTag(tag);
@@ -200,23 +186,16 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
         }
         musicIdsList.clear();
         musicIdsList.addAll(randomSet);
-        List<Music> musicList = musicMapper.selectBatchIds(musicIdsList);
-        num = Math.min(num, musicList.size());
-        List<MusicSelectResponse.MusicInfo> musicInfos = music2MusicResponse(musicList, num);
-        response.setMusicList(musicInfos);
-        return response;
+        return musicMapper.selectBatchIds(musicIdsList);
     }
 
-    /**
-     * List<Music>经过查询转换成 [最多包含数量num] 的List<MusicSelectResponse.MusicInfo>
-     */
-    private List<MusicSelectResponse.MusicInfo> music2MusicResponse(List<Music> musicList, int num) {
+    @Override
+    public List<MusicSelectResponse.MusicInfo> transMusiclist2MusicinfoList(List<Music> musicList) {
         if (musicList == null) {
             return null;
         }
-        int total = Math.min(musicList.size(), num);
         List<MusicSelectResponse.MusicInfo> responseList = new ArrayList<>();
-        for (int i = 0; i < total; i++) {
+        for (int i = 0; i < musicList.size(); i++) {
             Music music = musicList.get(i);
             Artist artist = artistMapper.selectById(music.getArtistId());
             String artistName = artist == null ? null : artist.getName();
@@ -231,6 +210,14 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
             responseList.add(info);
         }
         return responseList;
+    }
+
+    @Override
+    public List<Music> selectBatchIds(List<String> musicIdList) {
+        if (musicIdList == null || musicIdList.size() == 0) {
+            return null;
+        }
+        return musicMapper.selectBatchIds(musicIdList);
     }
 
 
