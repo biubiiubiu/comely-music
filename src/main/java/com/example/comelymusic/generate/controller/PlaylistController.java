@@ -89,7 +89,7 @@ public class PlaylistController {
         return R.ok();
     }
 
-    @PostMapping("/add-music")
+    @PostMapping("/add-music-into-playlist")
     public R addMusicToPlaylist(@Validated @RequestBody PlaylistMusicAddRequest request) {
         if (request.getUsername() == null || request.getPlaylistName() == null || request.getUsername().length() == 0 || request.getPlaylistName().length() == 0) {
             return R.setResult(ResultCode.PARAM_ERROR);

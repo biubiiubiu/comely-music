@@ -187,7 +187,8 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
                 total += playlistMusicMapper.insert(new PlaylistMusic().setMusicId(music.getId()).setPlaylistId(playlistId));
             }
             // 修改playlist歌曲数量
-            addMusicNum(playlistId, playlist.getMusicNum() + total);
+            addMusicNum(playlistId, total);
+            log.warn("成功插入：" + total);
             return total;
         }
         return -1;
