@@ -102,6 +102,19 @@ public class PlaylistController {
         return R.ok().message("成功加入的歌曲数量：" + result);
     }
 
+    @PostMapping("/delete-music-from-playlist")
+    public R deleteMusicFromPlaylist(@Validated @RequestBody PlaylistMusicAddRequest request) {
+        if (request.getUsername() == null || request.getPlaylistName() == null || request.getUsername().length() == 0 || request.getPlaylistName().length() == 0) {
+            return R.setResult(ResultCode.PARAM_ERROR);
+        }
+        int result = playlistService.deleteMusicfromPlaylist(request);
+        if (result == -1) {
+            // 歌单不存在
+            return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
+        }
+        return R.ok().message("成功删除的歌曲数量：" + result);
+    }
+
     /**
      * 查询用户创建的所有歌单info
      *

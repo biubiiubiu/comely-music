@@ -59,4 +59,9 @@ public interface PlaylistService extends IService<Playlist> {
      * playlist转换成playlistInfo
      */
     UserPlaylistsSelectResponse.PlaylistInfo transPlaylist2PlaylistInfo(Playlist playlist);
+
+    /**
+     * 把music从歌单删除
+     */
+    int deleteMusicfromPlaylist(PlaylistMusicAddRequest request);
 }

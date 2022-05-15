@@ -217,6 +217,37 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
                 playlist.getMusicNum(), playlist.getVisibility(), createdUserNickname, playlist.getDescription());
     }
 
+    @Override
+    public int deleteMusicfromPlaylist(PlaylistMusicAddRequest request) {
+        List<Music> musicList = musicService.getMusicListByMusicAddInfoList(request.getMusicAddInfoList());
+
+        Playlist playlist = selectPlaylist(new PlaylistSelectRequest()
+                .setUsername(request.getUsername()).setPlaylistName(request.getPlaylistName()));
+
+        if (playlist != null) {
+            String playlistId = playlist.getId();
+            // 去重
+            duplicateRemoval(musicList);
+
+            int total = 0;
+            for (Music music : musicList) {
+                QueryWrapper<PlaylistMusic> wrapper = new QueryWrapper<>();
+                wrapper.eq("playlist_id", playlistId).eq("music_id", music.getId());
+                int delete = playlistMusicMapper.delete(wrapper);
+                if (delete == 0) {
+                    log.warn("删除音乐失败：" + music.getName());
+                    continue;
+                }
+                total += delete;
+            }
+            // 修改playlist歌曲数量
+            addMusicNum(playlistId, -total);
+            log.warn("成功删除：" + total);
+            return total;
+        }
+        return -1;
+    }
+
     /**
      * 删除所有与歌单-歌曲关联表信息,返回删除成功条目
      */
