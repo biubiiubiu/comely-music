@@ -59,8 +59,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
 
     @Override
     public int create(PlaylistCreateRequest request) {
-        if (request.getUsername() == null || request.getUsername().length() == 0 || request.getName() == null || request.getName().length() == 0
-                || request.getRelation() == null) {
+        if (request.getUsername() == null || request.getUsername().length() == 0 || request.getName() == null || request.getName().length() == 0) {
             return -1;
         }
         if (checkoutDuplicate(request.getName(), request.getUsername())) {
@@ -71,6 +70,9 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         int insertPlaylist = playlistMapper.insert(playlist);
         if (insertPlaylist == 0) {
             return 0;
+        }
+        if (request.getRelation() == null) {
+            request.setRelation(1);
         }
         int insertRelation = userPlaylistService.create(request.getName(), request.getUsername(), request.getRelation());
         if (insertRelation == 0) {

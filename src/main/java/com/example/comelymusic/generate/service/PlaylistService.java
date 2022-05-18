@@ -21,7 +21,7 @@ import java.util.List;
 public interface PlaylistService extends IService<Playlist> {
 
     /**
-     * （创建歌单,并创建用户歌单关系），原子操作，返回结果
+     * （创建歌单,并创建用户歌单关系,默认时创建关系，如果是收藏需要设置relation），原子操作，返回结果
      */
     int create(PlaylistCreateRequest request);
 
