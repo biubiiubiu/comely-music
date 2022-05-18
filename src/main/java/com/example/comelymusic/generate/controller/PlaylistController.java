@@ -97,12 +97,15 @@ public class PlaylistController {
         if (request.getUsername() == null || request.getPlaylistName() == null || request.getUsername().length() == 0 || request.getPlaylistName().length() == 0) {
             return R.setResult(ResultCode.PARAM_ERROR);
         }
-        int result = playlistService.addMusic2Playlist(request);
-        if (result == -1) {
+        List<Music> musicList = playlistService.addMusic2Playlist(request);
+        if (musicList == null) {
             // 歌单不存在
             return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
         }
-        return R.ok().message("成功加入的歌曲数量：" + result);
+        List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(musicList);
+        MusicSelectResponse response = new MusicSelectResponse();
+        response.setMusicList(musicInfos);
+        return R.ok().data(response);
     }
 
     @PostMapping("/delete-music-from-playlist")
@@ -167,12 +170,15 @@ public class PlaylistController {
         if (request.getUsername() == null || request.getUsername().length() == 0) {
             return R.setResult(ResultCode.PARAM_ERROR);
         }
-        int result = playlistService.addMusic2Mylike(request);
-        if (result == -1) {
+        List<Music> successList = playlistService.addMusic2Mylike(request);
+        if (successList == null) {
             // 歌单不存在
             return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
         }
-        return R.ok().message("成功加入的歌曲数量：" + result);
+        List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(successList);
+        MusicSelectResponse response = new MusicSelectResponse();
+        response.setMusicList(musicInfos);
+        return R.ok().data(response);
     }
 
 }

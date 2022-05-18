@@ -177,7 +177,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     }
 
     @Override
-    public int addMusic2Playlist(PlaylistMusicAddRequest request) {
+    public List<Music> addMusic2Playlist(PlaylistMusicAddRequest request) {
         List<Music> musicList = musicService.getMusicListByMusicAddInfoList(request.getMusicAddInfoList());
 
         Playlist playlist = selectPlaylist(new PlaylistSelectRequest()
@@ -186,17 +186,17 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         if (playlist != null) {
             return addMusicList2Playlist(musicList, playlist);
         }
-        return -1;
+        return null;
     }
 
-    private int addMusicList2Playlist(List<Music> musicList, Playlist playlist) {
+    private List<Music> addMusicList2Playlist(List<Music> musicList, Playlist playlist) {
         if (playlist == null) {
-            return 0;
+            return null;
         }
         String playlistId = playlist.getId();
         // 去重
         duplicateRemoval(musicList);
-
+        List<Music> successList = new ArrayList<>();
         int total = 0;
         for (Music music : musicList) {
             QueryWrapper<PlaylistMusic> wrapper = new QueryWrapper<>();
@@ -206,12 +206,16 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
                 log.warn("重复插入音乐名：" + music.getName());
                 continue;
             }
-            total += playlistMusicMapper.insert(new PlaylistMusic().setMusicId(music.getId()).setPlaylistId(playlistId));
+            int insert = playlistMusicMapper.insert(new PlaylistMusic().setMusicId(music.getId()).setPlaylistId(playlistId));
+            if(insert==1){
+                successList.add(music);
+            }
+            total += insert;
         }
         // 修改playlist歌曲数量
         addMusicNum(playlistId, total);
         log.warn("成功插入：" + total);
-        return total;
+        return successList;
     }
 
     @Override
@@ -272,15 +276,16 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     }
 
     @Override
-    public int addMusic2Mylike(PlaylistMusicAddRequest request) {
+    public List<Music> addMusic2Mylike(PlaylistMusicAddRequest request) {
         List<Music> musicList = musicService.getMusicListByMusicAddInfoList(request.getMusicAddInfoList());
         List<Playlist> playlists = selectPlaylists(request.getUsername(), 0);
         if (playlists != null && playlists.size() == 1) {
             Playlist mylike = playlists.get(0);
-            return addMusicList2Playlist(musicList, mylike);
+            List<Music> successList = addMusicList2Playlist(musicList, mylike);
+            return successList;
         } else {
             log.error("用户喜欢歌单数量异常！");
-            return -1;
+            return null;
         }
     }
 

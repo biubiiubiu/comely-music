@@ -6,6 +6,7 @@ import com.example.comelymusic.generate.controller.requests.PlaylistMusicAddRequ
 import com.example.comelymusic.generate.controller.requests.PlaylistSelectRequest;
 import com.example.comelymusic.generate.controller.requests.PlaylistUpdateRequest;
 import com.example.comelymusic.generate.controller.responses.UserPlaylistsSelectResponse;
+import com.example.comelymusic.generate.entity.Music;
 import com.example.comelymusic.generate.entity.Playlist;
 
 import java.util.List;
@@ -53,7 +54,7 @@ public interface PlaylistService extends IService<Playlist> {
     /**
      * 把music加入歌单
      */
-    int addMusic2Playlist(PlaylistMusicAddRequest request);
+    List<Music> addMusic2Playlist(PlaylistMusicAddRequest request);
 
     /**
      * 查询user所有relation（创建、收藏、喜欢）的歌单
@@ -73,6 +74,6 @@ public interface PlaylistService extends IService<Playlist> {
     /**
      * 把music加入”我喜欢“歌单
      */
-    int addMusic2Mylike(PlaylistMusicAddRequest request);
+    List<Music> addMusic2Mylike(PlaylistMusicAddRequest request);
 
 }
