@@ -26,6 +26,11 @@ public interface PlaylistService extends IService<Playlist> {
     int create(PlaylistCreateRequest request);
 
     /**
+     * 创建用户喜欢歌单
+     */
+    int createMyLike(String username);
+
+    /**
      * 根据创建用户username和歌单名称来删除歌单,并删除用户-歌单关系
      */
     int deletePlaylist(PlaylistSelectRequest request);
@@ -64,4 +69,10 @@ public interface PlaylistService extends IService<Playlist> {
      * 把music从歌单删除
      */
     int deleteMusicfromPlaylist(PlaylistMusicAddRequest request);
+
+    /**
+     * 把music加入”我喜欢“歌单
+     */
+    int addMusic2Mylike(PlaylistMusicAddRequest request);
+
 }

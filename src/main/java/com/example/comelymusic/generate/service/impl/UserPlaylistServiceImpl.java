@@ -1,10 +1,12 @@
 package com.example.comelymusic.generate.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.comelymusic.generate.controller.requests.PlaylistCreateRequest;
 import com.example.comelymusic.generate.controller.requests.PlaylistSelectRequest;
 import com.example.comelymusic.generate.entity.Playlist;
 import com.example.comelymusic.generate.entity.User;
 import com.example.comelymusic.generate.entity.UserPlaylist;
+import com.example.comelymusic.generate.enums.UserPlaylistRelation;
 import com.example.comelymusic.generate.mapper.PlaylistMapper;
 import com.example.comelymusic.generate.mapper.UserPlaylistMapper;
 import com.example.comelymusic.generate.service.PlaylistService;
@@ -41,9 +43,6 @@ public class UserPlaylistServiceImpl extends ServiceImpl<UserPlaylistMapper, Use
     @Autowired
     private PlaylistService playlistService;
 
-    @Autowired
-    private PlaylistMapper playlistMapper;
-
     /**
      * 创建用户-歌单 关系
      *
@@ -58,15 +57,18 @@ public class UserPlaylistServiceImpl extends ServiceImpl<UserPlaylistMapper, Use
         User user = userService.selectByUsername(username);
         String userid = user.getId();
         Playlist playlist = playlistService.selectPlaylist(new PlaylistSelectRequest().setUsername(username).setPlaylistName(playlistName));
-        String playlistId = playlist.getId();
-        if (checkoutDuplicate(playlistId, userid)) {
-            // 用户-歌单名 唯一
-            return -1;
+        if (playlist != null) {
+            String playlistId = playlist.getId();
+            if (checkoutDuplicate(playlistId, userid)) {
+                // 用户-歌单名 唯一
+                return -1;
+            }
+            entity.setUserId(userid);
+            entity.setPlaylistId(playlistId);
+            entity.setRelation(relation);
+            return mapper.insert(entity);
         }
-        entity.setUserId(userid);
-        entity.setPlaylistId(playlistId);
-        entity.setRelation(relation);
-        return mapper.insert(entity);
+        return 0;
     }
 
     @Override

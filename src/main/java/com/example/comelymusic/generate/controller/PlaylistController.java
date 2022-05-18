@@ -50,6 +50,9 @@ public class PlaylistController {
     public R create(@Validated @RequestBody PlaylistCreateRequest request) {
         int result = playlistService.create(request);
         if (result == -1) {
+            return R.setResult(ResultCode.PARAM_ERROR);
+        }
+        if (result == -2) {
             return R.setResult(ResultCode.PLAYLIST_CREATE_DUPLICATE_ERROR);
         }
         if (result == 0) {
@@ -127,6 +130,9 @@ public class PlaylistController {
             return R.setResult(ResultCode.PARAM_ERROR);
         }
         List<Playlist> list = playlistService.selectPlaylists(username, UserPlaylistRelation.CREATE.getRelation());
+        if (list == null) {
+            return R.ok().data(new UserPlaylistsSelectResponse());
+        }
         UserPlaylistsSelectResponse response = new UserPlaylistsSelectResponse();
         List<UserPlaylistsSelectResponse.PlaylistInfo> models = new ArrayList<>();
         for (Playlist playlist : list) {
@@ -154,6 +160,19 @@ public class PlaylistController {
             response.setMusicInfoList(musicInfos);
         }
         return R.ok().data(response);
+    }
+
+    @PostMapping("/add-music-into-my-like")
+    public R addMusicToMylike(@Validated @RequestBody PlaylistMusicAddRequest request) {
+        if (request.getUsername() == null || request.getUsername().length() == 0) {
+            return R.setResult(ResultCode.PARAM_ERROR);
+        }
+        int result = playlistService.addMusic2Mylike(request);
+        if (result == -1) {
+            // 歌单不存在
+            return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
+        }
+        return R.ok().message("成功加入的歌曲数量：" + result);
     }
 
 }

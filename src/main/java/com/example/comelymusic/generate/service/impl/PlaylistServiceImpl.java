@@ -59,23 +59,34 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
 
     @Override
     public int create(PlaylistCreateRequest request) {
+        if (request.getUsername() == null || request.getUsername().length() == 0 || request.getName() == null || request.getName().length() == 0
+                || request.getRelation() == null) {
+            return -1;
+        }
         if (checkoutDuplicate(request.getName(), request.getUsername())) {
             // 用户不能创建重复歌单名
-            return -1;
+            return -2;
         }
         Playlist playlist = createRequest2Entity(request);
         int insertPlaylist = playlistMapper.insert(playlist);
         if (insertPlaylist == 0) {
             return 0;
         }
-        int insertRelation = userPlaylistService.create(request.getName(), request.getUsername(),
-                UserPlaylistRelation.CREATE.getRelation());
+        int insertRelation = userPlaylistService.create(request.getName(), request.getUsername(), request.getRelation());
         if (insertRelation == 0) {
             // 如果关系为创建成功，那删除刚刚创建的歌单，相当于一次原子操作
             deletePlaylist(new PlaylistSelectRequest().setPlaylistName(request.getName()).setUsername(request.getUsername()));
             return 0;
         }
         return 1;
+    }
+
+    @Override
+    public int createMyLike(String username) {
+        PlaylistCreateRequest request = new PlaylistCreateRequest();
+        String playlistName = username + "的喜欢歌单";
+        request.setUsername(username).setName(playlistName).setVisibility(0).setMusicNum(0).setRelation(UserPlaylistRelation.MY_LIKE.getRelation());
+        return create(request);
     }
 
     private boolean checkoutDuplicate(String name, String username) {
@@ -171,27 +182,34 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
                 .setUsername(request.getUsername()).setPlaylistName(request.getPlaylistName()));
 
         if (playlist != null) {
-            String playlistId = playlist.getId();
-            // 去重
-            duplicateRemoval(musicList);
-
-            int total = 0;
-            for (Music music : musicList) {
-                QueryWrapper<PlaylistMusic> wrapper = new QueryWrapper<>();
-                wrapper.eq("playlist_id", playlistId).eq("music_id", music.getId());
-                PlaylistMusic existMusic = playlistMusicMapper.selectOne(wrapper);
-                if (existMusic != null) {
-                    log.warn("重复插入音乐名：" + music.getName());
-                    continue;
-                }
-                total += playlistMusicMapper.insert(new PlaylistMusic().setMusicId(music.getId()).setPlaylistId(playlistId));
-            }
-            // 修改playlist歌曲数量
-            addMusicNum(playlistId, total);
-            log.warn("成功插入：" + total);
-            return total;
+            return addMusicList2Playlist(musicList, playlist);
         }
         return -1;
+    }
+
+    private int addMusicList2Playlist(List<Music> musicList, Playlist playlist) {
+        if (playlist == null) {
+            return 0;
+        }
+        String playlistId = playlist.getId();
+        // 去重
+        duplicateRemoval(musicList);
+
+        int total = 0;
+        for (Music music : musicList) {
+            QueryWrapper<PlaylistMusic> wrapper = new QueryWrapper<>();
+            wrapper.eq("playlist_id", playlistId).eq("music_id", music.getId());
+            PlaylistMusic existMusic = playlistMusicMapper.selectOne(wrapper);
+            if (existMusic != null) {
+                log.warn("重复插入音乐名：" + music.getName());
+                continue;
+            }
+            total += playlistMusicMapper.insert(new PlaylistMusic().setMusicId(music.getId()).setPlaylistId(playlistId));
+        }
+        // 修改playlist歌曲数量
+        addMusicNum(playlistId, total);
+        log.warn("成功插入：" + total);
+        return total;
     }
 
     @Override
@@ -203,6 +221,9 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         wrapper.eq("relation", relation);
         List<UserPlaylist> userPlaylists = userPlaylistMapper.selectList(wrapper);
         List<String> playlistIds = userPlaylists.stream().map(UserPlaylist::getPlaylistId).collect(Collectors.toList());
+        if (playlistIds.size() == 0) {
+            return null;
+        }
         return playlistMapper.selectBatchIds(playlistIds);
     }
 
@@ -246,6 +267,19 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
             return total;
         }
         return -1;
+    }
+
+    @Override
+    public int addMusic2Mylike(PlaylistMusicAddRequest request) {
+        List<Music> musicList = musicService.getMusicListByMusicAddInfoList(request.getMusicAddInfoList());
+        List<Playlist> playlists = selectPlaylists(request.getUsername(), 0);
+        if (playlists != null && playlists.size() == 1) {
+            Playlist mylike = playlists.get(0);
+            return addMusicList2Playlist(musicList, mylike);
+        } else {
+            log.error("用户喜欢歌单数量异常！");
+            return -1;
+        }
     }
 
     /**

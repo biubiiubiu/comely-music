@@ -1,23 +1,21 @@
 package com.example.comelymusic.generate.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.comelymusic.generate.common.ComelyMusicException;
 import com.example.comelymusic.generate.common.utils.JwtUtils;
 import com.example.comelymusic.generate.common.utils.RedisUtils;
 import com.example.comelymusic.generate.controller.requests.LoginRequest;
-import com.example.comelymusic.generate.controller.requests.PlaylistCreateRequest;
-import com.example.comelymusic.generate.controller.requests.PlaylistSelectRequest;
 import com.example.comelymusic.generate.controller.requests.UserCreateRequest;
 import com.example.comelymusic.generate.controller.responses.LoginResponse;
 import com.example.comelymusic.generate.controller.responses.UserInfoResponse;
-import com.example.comelymusic.generate.entity.Playlist;
 import com.example.comelymusic.generate.entity.User;
 import com.example.comelymusic.generate.enums.Gender;
 import com.example.comelymusic.generate.enums.ResultCode;
 import com.example.comelymusic.generate.mapper.UserMapper;
 import com.example.comelymusic.generate.service.PlaylistService;
+import com.example.comelymusic.generate.service.UserPlaylistService;
 import com.example.comelymusic.generate.service.UserService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -38,7 +36,6 @@ import java.util.UUID;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     private static final String DEFAULT_AVATAR_ID = "DEFAULT-AVATAR-ID";
     private static final String DEFAULT_NICKNAME = "新用户";
-    private static final String MY_LIKE_PLAYLIST = "我喜欢";
 
     @Autowired
     UserMapper userMapper;
@@ -49,8 +46,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     JwtUtils jwtUtils;
 
-    @Autowired
     @Lazy
+    @Autowired
     private PlaylistService playlistService;
 
     /**
@@ -73,6 +70,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return 0;
         }
         User user = userCreateRequestToUser(userCreateRequest);
+        // 创建我喜欢歌单
+        int myLike = playlistService.createMyLike(userCreateRequest.getUsername());
+        if (myLike == -1) {
+            log.error("创建我喜欢歌单失败");
+        }
         return userMapper.insert(user);
     }
 
@@ -165,6 +167,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         newUser.setNickname(DEFAULT_NICKNAME + UUID.randomUUID().toString().substring(0, 8));
         userMapper.insert(newUser);
 
+        // 创建我喜欢歌单
+        int myLike = playlistService.createMyLike(request.getUsername());
+        if (myLike == -1) {
+            log.error("创建我喜欢歌单失败");
+        }
+
+        // 生成token
         String key = LOGIN_TOKEN_KEY_PREFIX + request.getUsername();
         String token = jwtUtils.createToken(request.getUsername());
         LoginResponse response = user2LoginResponse(newUser, token, true);
@@ -248,18 +257,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setGender(userCreateRequest.getGender());
         user.setRole(userCreateRequest.getRole());
         return user;
-    }
-
-    private String createMyLikePlaylist(String username) {
-        PlaylistCreateRequest request = new PlaylistCreateRequest();
-        request.setUsername(username).setName(MY_LIKE_PLAYLIST);
-        int i = playlistService.create(request);
-        if (i != 0) {
-            Playlist myLikePlaylist = playlistService.selectPlaylist(
-                    new PlaylistSelectRequest().setPlaylistName(MY_LIKE_PLAYLIST).setUsername(username));
-            return myLikePlaylist.getId();
-        }
-        return null;
     }
 
     /**
