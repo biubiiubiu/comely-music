@@ -207,7 +207,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
                 continue;
             }
             int insert = playlistMusicMapper.insert(new PlaylistMusic().setMusicId(music.getId()).setPlaylistId(playlistId));
-            if(insert==1){
+            if (insert == 1) {
                 successList.add(music);
             }
             total += insert;
@@ -245,12 +245,13 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     }
 
     @Override
-    public int deleteMusicfromPlaylist(PlaylistMusicAddRequest request) {
+    public List<Music> deleteMusicfromPlaylist(PlaylistMusicAddRequest request) {
         List<Music> musicList = musicService.getMusicListByMusicAddInfoList(request.getMusicAddInfoList());
 
         Playlist playlist = selectPlaylist(new PlaylistSelectRequest()
                 .setUsername(request.getUsername()).setPlaylistName(request.getPlaylistName()));
 
+        List<Music> successList = new ArrayList<>();
         if (playlist != null) {
             String playlistId = playlist.getId();
             // 去重
@@ -265,14 +266,15 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
                     log.warn("删除音乐失败：" + music.getName());
                     continue;
                 }
+                successList.add(music);
                 total += delete;
             }
             // 修改playlist歌曲数量
             addMusicNum(playlistId, -total);
             log.warn("成功删除：" + total);
-            return total;
+            return successList;
         }
-        return -1;
+        return null;
     }
 
     @Override
@@ -281,12 +283,22 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         List<Playlist> playlists = selectPlaylists(request.getUsername(), 0);
         if (playlists != null && playlists.size() == 1) {
             Playlist mylike = playlists.get(0);
-            List<Music> successList = addMusicList2Playlist(musicList, mylike);
-            return successList;
+            return addMusicList2Playlist(musicList, mylike);
         } else {
             log.error("用户喜欢歌单数量异常！");
             return null;
         }
+    }
+
+    @Override
+    public List<Music> removeFromMylike(PlaylistMusicAddRequest request) {
+        if (request.getUsername() == null || request.getMusicAddInfoList() == null || request.getMusicAddInfoList().size() == 0) {
+            return null;
+        }
+        if (request.getPlaylistName() == null) {
+            request.setPlaylistName(request.getUsername() + "的喜欢歌单");
+        }
+        return deleteMusicfromPlaylist(request);
     }
 
     /**

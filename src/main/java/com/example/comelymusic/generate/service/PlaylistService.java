@@ -69,11 +69,15 @@ public interface PlaylistService extends IService<Playlist> {
     /**
      * 把music从歌单删除
      */
-    int deleteMusicfromPlaylist(PlaylistMusicAddRequest request);
+    List<Music> deleteMusicfromPlaylist(PlaylistMusicAddRequest request);
 
     /**
      * 把music加入”我喜欢“歌单
      */
     List<Music> addMusic2Mylike(PlaylistMusicAddRequest request);
 
+    /**
+     * 把music从”我喜欢“歌单移除
+     */
+    List<Music> removeFromMylike(PlaylistMusicAddRequest request);
 }

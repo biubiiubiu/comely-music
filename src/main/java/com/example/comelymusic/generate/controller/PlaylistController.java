@@ -98,14 +98,7 @@ public class PlaylistController {
             return R.setResult(ResultCode.PARAM_ERROR);
         }
         List<Music> musicList = playlistService.addMusic2Playlist(request);
-        if (musicList == null) {
-            // 歌单不存在
-            return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
-        }
-        List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(musicList);
-        MusicSelectResponse response = new MusicSelectResponse();
-        response.setMusicList(musicInfos);
-        return R.ok().data(response);
+        return dealWithAddOrRemovePlaylistResult(musicList);
     }
 
     @PostMapping("/delete-music-from-playlist")
@@ -113,12 +106,8 @@ public class PlaylistController {
         if (request.getUsername() == null || request.getPlaylistName() == null || request.getUsername().length() == 0 || request.getPlaylistName().length() == 0) {
             return R.setResult(ResultCode.PARAM_ERROR);
         }
-        int result = playlistService.deleteMusicfromPlaylist(request);
-        if (result == -1) {
-            // 歌单不存在
-            return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
-        }
-        return R.ok().message("成功删除的歌曲数量：" + result);
+        List<Music> successList = playlistService.deleteMusicfromPlaylist(request);
+        return dealWithAddOrRemovePlaylistResult(successList);
     }
 
     /**
@@ -171,6 +160,19 @@ public class PlaylistController {
             return R.setResult(ResultCode.PARAM_ERROR);
         }
         List<Music> successList = playlistService.addMusic2Mylike(request);
+        return dealWithAddOrRemovePlaylistResult(successList);
+    }
+
+    @PostMapping("/remove-music-from-my-like")
+    public R removeMusicFromMylike(@Validated @RequestBody PlaylistMusicAddRequest request) {
+        if (request.getUsername() == null || request.getUsername().length() == 0) {
+            return R.setResult(ResultCode.PARAM_ERROR);
+        }
+        List<Music> successList = playlistService.removeFromMylike(request);
+        return dealWithAddOrRemovePlaylistResult(successList);
+    }
+
+    private R dealWithAddOrRemovePlaylistResult(List<Music> successList) {
         if (successList == null) {
             // 歌单不存在
             return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
