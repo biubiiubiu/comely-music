@@ -20,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -205,13 +202,18 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         // 去重
         duplicateRemoval(musicList);
         List<Music> successList = new ArrayList<>();
-        int total = 0;
+        int total = 0, resort = 0;
         for (Music music : musicList) {
             QueryWrapper<PlaylistMusic> wrapper = new QueryWrapper<>();
             wrapper.eq("playlist_id", playlistId).eq("music_id", music.getId());
             PlaylistMusic existMusic = playlistMusicMapper.selectOne(wrapper);
             if (existMusic != null) {
-                log.warn("重复插入音乐名：" + music.getName());
+                // 修改updateTime，然后按updateTime顺序查询
+                log.warn("音乐调换顺序（删除后重新添加）：" + music.getName());
+                existMusic.setUpdatedTime(new Date());
+                int update = playlistMusicMapper.update(existMusic, new QueryWrapper<PlaylistMusic>().eq("playlist_id", existMusic.getPlaylistId())
+                        .eq("music_id", existMusic.getMusicId()));
+                resort += update;
                 continue;
             }
             int insert = playlistMusicMapper.insert(new PlaylistMusic().setMusicId(music.getId()).setPlaylistId(playlistId));
@@ -222,7 +224,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         }
         // 修改playlist歌曲数量
         addMusicNum(playlistId, total);
-        log.warn("成功插入：" + total);
+        log.warn("成功插入：" + total + "，成功调整顺序：" + resort);
         return successList;
     }
 

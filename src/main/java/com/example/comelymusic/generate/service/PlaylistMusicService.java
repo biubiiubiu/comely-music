@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface PlaylistMusicService extends IService<PlaylistMusic> {
     /**
-     * 查询某个歌单的所有music id
+     * 查询某个歌单的所有music id，根据updateTime排序
      */
-    List<String> selectMusicIdsByPlaylistId(String playlistId);
+    List<String> selectMusicIdsByPlaylistIdSortByUpdateTime(String playlistId);
 }

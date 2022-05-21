@@ -21,7 +21,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -146,9 +148,24 @@ public class PlaylistController {
         response.setPlaylistInfo(playlistInfo);
 
         if (playlistInfo.getMusicNum() > 0) {
-            List<String> musicIdList = playlistMusicService.selectMusicIdsByPlaylistId(playlist.getId());
+            List<String> musicIdList = playlistMusicService.selectMusicIdsByPlaylistIdSortByUpdateTime(playlist.getId());
             List<Music> musicList = musicService.selectBatchIds(musicIdList);
-            List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(musicList);
+
+            // 对musicList按照musicIdList排序
+            Map<String, Music> id2MusicMap = new HashMap<>();
+            for (Music music : musicList) {
+                id2MusicMap.put(music.getId(), music);
+            }
+            List<Music> sortedList = new ArrayList<>();
+            for (String musicId : musicIdList) {
+                sortedList.add(id2MusicMap.get(musicId));
+            }
+            // 排序之后截取20个
+            if (sortedList.size() >= 20) {
+                // 只返回最近20个播放记录
+                sortedList = sortedList.subList(0, 20);
+            }
+            List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(sortedList);
             response.setMusicInfoList(musicInfos);
         }
         return R.ok().data(response);

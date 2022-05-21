@@ -24,10 +24,11 @@ public class PlaylistMusicServiceImpl extends ServiceImpl<PlaylistMusicMapper, P
     private PlaylistMusicMapper mapper;
 
     @Override
-    public List<String> selectMusicIdsByPlaylistId(String playlistId) {
+    public List<String> selectMusicIdsByPlaylistIdSortByUpdateTime(String playlistId) {
         QueryWrapper<PlaylistMusic> wrapper = new QueryWrapper<>();
         wrapper.eq("playlist_id", playlistId);
         List<PlaylistMusic> playlistMusics = mapper.selectList(wrapper);
+        playlistMusics.sort((o1, o2) -> o1.getUpdatedTime().before(o2.getUpdatedTime()) ? -1 : 1);
         List<String> musicIdList = new ArrayList<>();
         for (PlaylistMusic pm : playlistMusics) {
             musicIdList.add(pm.getMusicId());
