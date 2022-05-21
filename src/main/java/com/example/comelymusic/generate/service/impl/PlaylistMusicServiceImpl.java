@@ -28,7 +28,7 @@ public class PlaylistMusicServiceImpl extends ServiceImpl<PlaylistMusicMapper, P
         QueryWrapper<PlaylistMusic> wrapper = new QueryWrapper<>();
         wrapper.eq("playlist_id", playlistId);
         List<PlaylistMusic> playlistMusics = mapper.selectList(wrapper);
-        playlistMusics.sort((o1, o2) -> o1.getUpdatedTime().before(o2.getUpdatedTime()) ? -1 : 1);
+        playlistMusics.sort((o1, o2) -> o1.getUpdatedTime().after(o2.getUpdatedTime()) ? -1 : 1);
         List<String> musicIdList = new ArrayList<>();
         for (PlaylistMusic pm : playlistMusics) {
             musicIdList.add(pm.getMusicId());

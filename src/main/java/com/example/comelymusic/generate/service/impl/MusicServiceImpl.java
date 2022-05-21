@@ -115,7 +115,10 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
 
     @Override
     public List<Music> getMusicListByMusicAddInfoList(List<PlaylistMusicAddRequest.MusicAddInfo> musicAddInfoList) {
-        List<Music> result = new ArrayList<>();
+        if (musicAddInfoList == null) {
+            return null;
+        }
+        List<Music> resultList = new ArrayList<>();
         for (PlaylistMusicAddRequest.MusicAddInfo info : musicAddInfoList) {
             Artist artist = artistService.selectByArtistName(info.getArtistName());
             if (artist != null) {
@@ -124,13 +127,13 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
                 wrapper.eq("artist_id", artist.getId());
                 Music music = musicMapper.selectOne(wrapper);
                 if (music != null) {
-                    result.add(music);
+                    resultList.add(music);
                 }
             } else {
                 log.error("找不到音乐：" + info.getTitle() + "，歌手：" + info.getArtistName());
             }
         }
-        return result;
+        return resultList;
     }
 
     @Override
