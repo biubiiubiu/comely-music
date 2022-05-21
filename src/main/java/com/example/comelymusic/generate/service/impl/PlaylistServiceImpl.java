@@ -336,19 +336,11 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     }
 
     @Override
-    public List<UserPlaylistsSelectResponse.PlaylistInfo> fuzzySearchPlaylist(String searchContent) {
+    public List<Playlist> fuzzySearchPlaylist(String searchContent) {
         QueryWrapper<Playlist> wrapper = new QueryWrapper<>();
         wrapper.like("name", searchContent);
-        List<Playlist> playlists = playlistMapper.selectList(wrapper);
-        if (playlists != null) {
-            List<UserPlaylistsSelectResponse.PlaylistInfo> infoList = new ArrayList<>();
-            for (Playlist pl : playlists) {
-                infoList.add(transPlaylist2PlaylistInfo(pl));
-            }
-            return infoList;
-        } else {
-            return null;
-        }
+        wrapper.eq("visibility", 1);
+        return playlistMapper.selectList(wrapper);
     }
 
     /**

@@ -99,5 +99,5 @@ public interface PlaylistService extends IService<Playlist> {
     /**
      * 根据歌单name或者创建者nickname模糊搜索歌单
      */
-    List<UserPlaylistsSelectResponse.PlaylistInfo> fuzzySearchPlaylist(String searchContent);
+    List<Playlist> fuzzySearchPlaylist(String searchContent);
 }

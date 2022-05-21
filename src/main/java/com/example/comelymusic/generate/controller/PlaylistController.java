@@ -139,35 +139,11 @@ public class PlaylistController {
 
     @PostMapping("/select-playlist-with-music-list")
     public R selectPlaylistWithMusicList(@Validated @RequestBody PlaylistSelectRequest request) {
-        PlaylistInfoWithMusicListResponse response = new PlaylistInfoWithMusicListResponse();
         Playlist playlist = playlistService.selectPlaylist(request);
         if (playlist == null) {
             return R.setResult(ResultCode.PLAYLIST_NOT_EXIST);
         }
-        UserPlaylistsSelectResponse.PlaylistInfo playlistInfo = playlistService.transPlaylist2PlaylistInfo(playlist);
-        response.setPlaylistInfo(playlistInfo);
-
-        if (playlistInfo.getMusicNum() > 0) {
-            List<String> musicIdList = playlistMusicService.selectMusicIdsByPlaylistIdSortByUpdateTime(playlist.getId());
-            List<Music> musicList = musicService.selectBatchIds(musicIdList);
-
-            // 对musicList按照musicIdList排序
-            Map<String, Music> id2MusicMap = new HashMap<>();
-            for (Music music : musicList) {
-                id2MusicMap.put(music.getId(), music);
-            }
-            List<Music> sortedList = new ArrayList<>();
-            for (String musicId : musicIdList) {
-                sortedList.add(id2MusicMap.get(musicId));
-            }
-            // 排序之后截取20个
-            if (sortedList.size() >= 20) {
-                // 只返回最近20个播放记录
-                sortedList = sortedList.subList(0, 20);
-            }
-            List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(sortedList);
-            response.setMusicInfoList(musicInfos);
-        }
+        PlaylistInfoWithMusicListResponse response = transPlaylist2PlaylistInfoWithMusicListResponse(playlist);
         return R.ok().data(response);
     }
 
@@ -219,14 +195,19 @@ public class PlaylistController {
 //    }
 
     @GetMapping("/fuzzy-search-playlist/{searchContent}")
-    public R fuzzySearchPlaylist(@PathVariable("searchContent") String searchContent) {
+    public R fuzzySearchPlaylistWithMusicList(@PathVariable("searchContent") String searchContent) {
+        List<PlaylistInfoWithMusicListResponse> responseList = new ArrayList<>();
         if (searchContent == null || searchContent.length() == 0) {
             return R.setResult(ResultCode.PARAM_ERROR);
         }
-        UserPlaylistsSelectResponse response = new UserPlaylistsSelectResponse();
-        List<UserPlaylistsSelectResponse.PlaylistInfo> infos = playlistService.fuzzySearchPlaylist(searchContent);
-        response.setPlaylistInfoList(infos);
-        return R.ok().data(response);
+        List<Playlist> playlists = playlistService.fuzzySearchPlaylist(searchContent);
+        if (playlists != null) {
+            for (Playlist pl:playlists){
+                PlaylistInfoWithMusicListResponse res = transPlaylist2PlaylistInfoWithMusicListResponse(pl);
+                responseList.add(res);
+            }
+        }
+        return R.ok().data(responseList);
     }
 
 
@@ -239,6 +220,35 @@ public class PlaylistController {
         MusicSelectResponse response = new MusicSelectResponse();
         response.setMusicList(musicInfos);
         return R.ok().data(response);
+    }
+
+    private PlaylistInfoWithMusicListResponse transPlaylist2PlaylistInfoWithMusicListResponse(Playlist playlist) {
+        PlaylistInfoWithMusicListResponse response = new PlaylistInfoWithMusicListResponse();
+        UserPlaylistsSelectResponse.PlaylistInfo playlistInfo = playlistService.transPlaylist2PlaylistInfo(playlist);
+        response.setPlaylistInfo(playlistInfo);
+
+        if (playlistInfo.getMusicNum() > 0) {
+            List<String> musicIdList = playlistMusicService.selectMusicIdsByPlaylistIdSortByUpdateTime(playlist.getId());
+            List<Music> musicList = musicService.selectBatchIds(musicIdList);
+
+            // 对musicList按照musicIdList排序
+            Map<String, Music> id2MusicMap = new HashMap<>();
+            for (Music music : musicList) {
+                id2MusicMap.put(music.getId(), music);
+            }
+            List<Music> sortedList = new ArrayList<>();
+            for (String musicId : musicIdList) {
+                sortedList.add(id2MusicMap.get(musicId));
+            }
+            // 排序之后截取20个
+            if (sortedList.size() >= 20) {
+                // 只返回最近20个播放记录
+                sortedList = sortedList.subList(0, 20);
+            }
+            List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(sortedList);
+            response.setMusicInfoList(musicInfos);
+        }
+        return response;
     }
 
 }
