@@ -95,4 +95,9 @@ public interface PlaylistService extends IService<Playlist> {
      * 把music从”最近播放“歌单移除
      */
     List<Music> removeFromRecentlyPlay(PlaylistMusicAddRequest request);
+
+    /**
+     * 根据歌单name或者创建者nickname模糊搜索歌单
+     */
+    List<UserPlaylistsSelectResponse.PlaylistInfo> fuzzySearchPlaylist(String searchContent);
 }

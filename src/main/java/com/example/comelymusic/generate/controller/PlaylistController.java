@@ -207,6 +207,29 @@ public class PlaylistController {
         return dealWithAddOrRemovePlaylistResult(successList);
     }
 
+//    @GetMapping("/fuzzy-search-playlist-limit/{searchContent}")
+//    public R fuzzySearchPlaylistLimit(@PathVariable("searchContent") String searchContent) {
+//        if (searchContent == null || searchContent.length() == 0) {
+//            return R.setResult(ResultCode.PARAM_ERROR);
+//        }
+//        UserPlaylistsSelectResponse response = new UserPlaylistsSelectResponse();
+//        List<UserPlaylistsSelectResponse.PlaylistInfo> infos = playlistService.fuzzySearchPlaylist(searchContent);
+//        response.setPlaylistInfoList(infos);
+//        return R.ok().data(response);
+//    }
+
+    @GetMapping("/fuzzy-search-playlist/{searchContent}")
+    public R fuzzySearchPlaylist(@PathVariable("searchContent") String searchContent) {
+        if (searchContent == null || searchContent.length() == 0) {
+            return R.setResult(ResultCode.PARAM_ERROR);
+        }
+        UserPlaylistsSelectResponse response = new UserPlaylistsSelectResponse();
+        List<UserPlaylistsSelectResponse.PlaylistInfo> infos = playlistService.fuzzySearchPlaylist(searchContent);
+        response.setPlaylistInfoList(infos);
+        return R.ok().data(response);
+    }
+
+
     private R dealWithAddOrRemovePlaylistResult(List<Music> successList) {
         if (successList == null) {
             // 歌单不存在
