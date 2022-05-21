@@ -18,5 +18,8 @@ public interface EntityTagService extends IService<EntityTag> {
 
     int create(EntityTagCreateRequest request);
 
+    /**
+     * 根据标签查询musicId 列表
+     */
     List<String> selectEntityIdsByTag(String tag);
 }

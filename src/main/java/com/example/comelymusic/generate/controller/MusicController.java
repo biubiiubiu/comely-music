@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -71,8 +71,14 @@ public class MusicController {
     @GetMapping("/fuzzy-search-name/{name}")
     public R fuzzySearchMusicByName(@PathVariable("name") String name) {
         List<Music> musicList = musicService.fuzzySearch(name);
+        List<String> tags = new ArrayList<>();
+        tags.add(name);
+        List<Music> musicListByTag = musicService.selectByTags(tags, 50);
+        Set<Music> set = new HashSet<>(musicList);
+        set.addAll(musicListByTag);
+        List<Music> resultList = new ArrayList<>(set);
         MusicSelectResponse response = new MusicSelectResponse();
-        List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(musicList);
+        List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(resultList);
         response.setMusicList(musicInfos);
         return R.ok().data(response);
     }
@@ -83,8 +89,14 @@ public class MusicController {
     @GetMapping("/fuzzy-search-name-limit/{name}")
     public R fuzzySearchMusicByNameLimit(@PathVariable("name") String name) {
         List<Music> musicList = musicService.fuzzySearch(name);
-        int right = Math.min(musicList.size(), 7);
-        List<Music> limitMusicList = musicList.subList(0, right);
+        List<String> tags = new ArrayList<>();
+        tags.add(name);
+        List<Music> musicListByTag = musicService.selectByTags(tags, 7);
+        Set<Music> set = new HashSet<>(musicList);
+        set.addAll(musicListByTag);
+        List<Music> resultList = new ArrayList<>(set);
+        int right = Math.min(resultList.size(), 7);
+        List<Music> limitMusicList = resultList.subList(0, right);
         MusicSelectResponse response = new MusicSelectResponse();
         List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(limitMusicList);
         response.setMusicList(musicInfos);
