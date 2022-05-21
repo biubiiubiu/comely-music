@@ -91,6 +91,14 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         return create(request);
     }
 
+    @Override
+    public int createRecentlyPlay(String username) {
+        PlaylistCreateRequest request = new PlaylistCreateRequest();
+        String playlistName = username + "的最近播放";
+        request.setUsername(username).setName(playlistName).setVisibility(0).setMusicNum(0).setRelation(UserPlaylistRelation.RECENTLY_PLAY.getRelation());
+        return create(request);
+    }
+
     private boolean checkoutDuplicate(String name, String username) {
         User user = userService.selectByUsername(username);
         QueryWrapper<Playlist> wrapper = new QueryWrapper<>();
@@ -280,7 +288,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     @Override
     public List<Music> addMusic2Mylike(PlaylistMusicAddRequest request) {
         List<Music> musicList = musicService.getMusicListByMusicAddInfoList(request.getMusicAddInfoList());
-        List<Playlist> playlists = selectPlaylists(request.getUsername(), 0);
+        List<Playlist> playlists = selectPlaylists(request.getUsername(), UserPlaylistRelation.MY_LIKE.getRelation());
         if (playlists != null && playlists.size() == 1) {
             Playlist mylike = playlists.get(0);
             return addMusicList2Playlist(musicList, mylike);
@@ -297,6 +305,30 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         }
         if (request.getPlaylistName() == null) {
             request.setPlaylistName(request.getUsername() + "的喜欢歌单");
+        }
+        return deleteMusicfromPlaylist(request);
+    }
+
+    @Override
+    public List<Music> addMusic2RecentlyPlay(PlaylistMusicAddRequest request) {
+        List<Music> musicList = musicService.getMusicListByMusicAddInfoList(request.getMusicAddInfoList());
+        List<Playlist> playlists = selectPlaylists(request.getUsername(), UserPlaylistRelation.RECENTLY_PLAY.getRelation());
+        if (playlists != null && playlists.size() == 1) {
+            Playlist recentlyPlay = playlists.get(0);
+            return addMusicList2Playlist(musicList, recentlyPlay);
+        } else {
+            log.error("用户最近播放歌单数量异常！");
+            return null;
+        }
+    }
+
+    @Override
+    public List<Music> removeFromRecentlyPlay(PlaylistMusicAddRequest request) {
+        if (request.getUsername() == null || request.getMusicAddInfoList() == null || request.getMusicAddInfoList().size() == 0) {
+            return null;
+        }
+        if (request.getPlaylistName() == null) {
+            request.setPlaylistName(request.getUsername() + "的最近播放");
         }
         return deleteMusicfromPlaylist(request);
     }

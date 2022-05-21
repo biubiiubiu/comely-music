@@ -172,6 +172,24 @@ public class PlaylistController {
         return dealWithAddOrRemovePlaylistResult(successList);
     }
 
+    @PostMapping("/add-music-into-recently-play")
+    public R addMusicToRecentlyPlay(@Validated @RequestBody PlaylistMusicAddRequest request) {
+        if (request.getUsername() == null || request.getUsername().length() == 0) {
+            return R.setResult(ResultCode.PARAM_ERROR);
+        }
+        List<Music> successList = playlistService.addMusic2RecentlyPlay(request);
+        return dealWithAddOrRemovePlaylistResult(successList);
+    }
+
+    @PostMapping("/remove-music-from-recently-play")
+    public R removeMusicFromRecentlyPlay(@Validated @RequestBody PlaylistMusicAddRequest request) {
+        if (request.getUsername() == null || request.getUsername().length() == 0) {
+            return R.setResult(ResultCode.PARAM_ERROR);
+        }
+        List<Music> successList = playlistService.removeFromRecentlyPlay(request);
+        return dealWithAddOrRemovePlaylistResult(successList);
+    }
+
     private R dealWithAddOrRemovePlaylistResult(List<Music> successList) {
         if (successList == null) {
             // 歌单不存在

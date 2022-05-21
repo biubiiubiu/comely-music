@@ -48,7 +48,7 @@ public class UserPlaylistServiceImpl extends ServiceImpl<UserPlaylistMapper, Use
      *
      * @param playlistName 歌单名
      * @param username     用户名
-     * @param relation     关系，0-我喜欢，1-创建，2-收藏
+     * @param relation     关系，0-我喜欢，1-创建，2-收藏，3-最近播放
      * @return 创建结果
      */
     @Override

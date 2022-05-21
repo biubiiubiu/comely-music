@@ -14,7 +14,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author zhangtian
@@ -35,7 +35,7 @@ public class UserPlaylist extends BaseEntity<UserPlaylist> {
     @TableField("playlist_id")
     private String playlistId;
 
-    @ApiModelProperty("用户歌单关系，0-我喜欢，1-创建，2-收藏")
+    @ApiModelProperty("用户歌单关系，0-我喜欢，1-创建，2-收藏,3-最近播放")
     @TableField("relation")
     private Integer relation;
 

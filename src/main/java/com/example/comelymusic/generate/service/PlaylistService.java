@@ -32,6 +32,11 @@ public interface PlaylistService extends IService<Playlist> {
     int createMyLike(String username);
 
     /**
+     * 创建用户最近播放歌单
+     */
+    int createRecentlyPlay(String username);
+
+    /**
      * 根据创建用户username和歌单名称来删除歌单,并删除用户-歌单关系
      */
     int deletePlaylist(PlaylistSelectRequest request);
@@ -80,4 +85,14 @@ public interface PlaylistService extends IService<Playlist> {
      * 把music从”我喜欢“歌单移除
      */
     List<Music> removeFromMylike(PlaylistMusicAddRequest request);
+
+    /**
+     * 把music加入”最近播放“歌单
+     */
+    List<Music> addMusic2RecentlyPlay(PlaylistMusicAddRequest request);
+
+    /**
+     * 把music从”最近播放“歌单移除
+     */
+    List<Music> removeFromRecentlyPlay(PlaylistMusicAddRequest request);
 }

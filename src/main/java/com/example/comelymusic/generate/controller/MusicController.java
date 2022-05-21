@@ -77,6 +77,20 @@ public class MusicController {
         return R.ok().data(response);
     }
 
+    /**
+     * 根据歌名模糊搜索,只返回十个结果
+     */
+    @GetMapping("/fuzzy-search-name-limit/{name}")
+    public R fuzzySearchMusicByNameLimit(@PathVariable("name") String name) {
+        List<Music> musicList = musicService.fuzzySearch(name);
+        int right = Math.min(musicList.size(), 7);
+        List<Music> limitMusicList = musicList.subList(0, right);
+        MusicSelectResponse response = new MusicSelectResponse();
+        List<MusicSelectResponse.MusicInfo> musicInfos = musicService.transMusiclist2MusicinfoList(limitMusicList);
+        response.setMusicList(musicInfos);
+        return R.ok().data(response);
+    }
+
     @PostMapping("/get-list-by-tags")
     public R getMusicByTags(@Validated @RequestBody MusicSelectByTagsRequest request) {
         List<String> tags = request.getTags();

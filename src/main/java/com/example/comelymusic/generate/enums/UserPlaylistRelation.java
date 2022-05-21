@@ -11,7 +11,8 @@ import lombok.Data;
 public enum UserPlaylistRelation {
     MY_LIKE(0),
     CREATE(1),
-    COLLECT(2);
+    COLLECT(2),
+    RECENTLY_PLAY(3);
 
     UserPlaylistRelation(Integer relation) {
         this.relation = relation;

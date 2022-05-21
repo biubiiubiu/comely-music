@@ -72,8 +72,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User user = userCreateRequestToUser(userCreateRequest);
         // 创建我喜欢歌单
         int myLike = playlistService.createMyLike(userCreateRequest.getUsername());
-        if (myLike == -1) {
+        if (myLike != 1) {
             log.error("创建我喜欢歌单失败");
+        }
+        // 创建最近播放歌单
+        int recentlyPlay = playlistService.createRecentlyPlay(userCreateRequest.getUsername());
+        if (recentlyPlay != 1) {
+            log.error("创建最近播放歌单失败");
         }
         return userMapper.insert(user);
     }
@@ -169,8 +174,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 创建我喜欢歌单
         int myLike = playlistService.createMyLike(request.getUsername());
-        if (myLike == -1) {
+        if (myLike != 1) {
             log.error("创建我喜欢歌单失败");
+        }
+        // 创建最近播放歌单
+        int recentlyPlay = playlistService.createRecentlyPlay(request.getUsername());
+        if (recentlyPlay != 1) {
+            log.error("创建最近播放歌单失败");
         }
 
         // 生成token
